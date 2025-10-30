@@ -1,35 +1,33 @@
-import { AuthService } from '../services/AuthService';
+import { authContext } from '../context/AuthContext';
 
 export class Navbar {
   private container: HTMLElement;
-  private authService: AuthService;
+  private unsubscribe?: () => void;
 
-  constructor(containerId: string, authService: AuthService) {
+  constructor(containerId: string) {
     const element = document.getElementById(containerId);
     if (!element) throw new Error(`Element with id ${containerId} not found`);
     
     this.container = element;
-    this.authService = authService;
-    this.render();
     
     // S'abonner aux changements d'authentification
-    this.authService.subscribe(() => this.render());
+    this.unsubscribe = authContext.subscribe((authState) => {
+      if (!authState.loading) {
+        this.render(authState.isAuthenticated, authState.user);
+      }
+    });
   }
 
-  private render(): void {
-    const isAuthenticated = this.authService.isAuthenticated();
-    const user = this.authService.getCurrentUser();
+  private render(isAuthenticated: boolean, user: any): void {
 
     this.container.innerHTML = `
       <nav class="navbar">
         <div class="nav-container">
-          <h1 class="logo">2 GRAMS GAMES</h1>
+          <h1 class="logo"><a href="#" data-route="/" style="color: inherit; text-decoration: none;">2 GRAMS GAMES</a></h1>
           <div class="nav-links">
             <a href="#" data-route="/" class="nav-link">Accueil</a>
-            <a href="#" data-route="/games" class="nav-link">Jeux</a>
-            <a href="#" data-route="/about" class="nav-link">À propos</a>
             ${isAuthenticated && user ? `
-              <span class="nav-user">👤 ${user.username}</span>
+              <span class="nav-user">👤 ${user.email}</span>
               <button class="btn-logout" id="logoutBtn">Déconnexion</button>
             ` : `
               <a href="#" data-route="/login" class="btn-login">Se connecter</a>
@@ -42,10 +40,16 @@ export class Navbar {
     // Ajouter l'événement de déconnexion
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        this.authService.logout();
+      logoutBtn.addEventListener('click', async () => {
+        await authContext.signOut();
         window.location.hash = '/';
       });
+    }
+  }
+
+  destroy(): void {
+    if (this.unsubscribe) {
+      this.unsubscribe();
     }
   }
 }

@@ -23,8 +23,8 @@ export class HomePage {
           <h2 class="hero-title">🍺 BIENVENUE SUR 2 GRAMS GAMES</h2>
           <p class="hero-subtitle">La plus grande collection de jeux d'alcool pour des soirées inoubliables !</p>
           <div class="hero-buttons">
-            <a href="#" data-route="/games" class="btn btn-primary">Découvrir les jeux</a>
-            <a href="#" data-route="/register" class="btn btn-secondary">Créer un compte</a>
+            <a href="#" data-route="/signup" class="btn btn-primary">🎉 Commencer maintenant</a>
+            <a href="#jeux" class="btn btn-secondary">Découvrir les jeux</a>
           </div>
         </div>
       </header>

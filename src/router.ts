@@ -2,15 +2,12 @@ import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { GameDetailPage } from './pages/GameDetailPage';
-import { AuthService } from './services/AuthService';
 
 export class Router {
-  private authService: AuthService;
   private appContainer: string;
 
-  constructor(appContainerId: string, authService: AuthService) {
+  constructor(appContainerId: string) {
     this.appContainer = appContainerId;
-    this.authService = authService;
     this.init();
   }
 
@@ -49,11 +46,12 @@ export class Router {
         break;
       
       case 'login':
-        new LoginPage(this.appContainer, this.authService);
+        new LoginPage(this.appContainer);
         break;
       
       case 'register':
-        new RegisterPage(this.appContainer, this.authService);
+      case 'signup':
+        new RegisterPage(this.appContainer);
         break;
       
       case 'game':

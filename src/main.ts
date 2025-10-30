@@ -1,16 +1,12 @@
 import '../style.css';
 import { Router } from './router';
 import { Navbar } from './components/Navbar';
-import { AuthService } from './services/AuthService';
-
-// Initialiser les services
-const authService = new AuthService();
 
 // Initialiser la navigation
-new Navbar('navbar', authService);
+new Navbar('navbar');
 
 // Initialiser le routeur
-new Router('app', authService);
+new Router('app');
 
 // Footer
 const footer = document.getElementById('footer');
