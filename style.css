@@ -410,6 +410,17 @@ body {
     display: block;
 }
 
+.auth-error-banner {
+    background: #fff3cd;
+    color: #856404;
+    padding: 1rem;
+    border-radius: 10px;
+    border: 2px solid #ffc107;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+}
+
 .btn-full {
     width: 100%;
     margin-top: 1rem;

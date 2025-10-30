@@ -32,6 +32,26 @@ export class Router {
 
   private route(): void {
     const hash = window.location.hash.slice(1) || '/';
+    
+    // Gérer les erreurs d'authentification (ex: lien de confirmation expiré)
+    if (hash.includes('error=')) {
+      const urlParams = new URLSearchParams(hash.split('?')[1] || hash);
+      const error = urlParams.get('error');
+      const errorDescription = urlParams.get('error_description');
+      
+      if (error) {
+        let message = 'Une erreur est survenue';
+        if (error === 'access_denied' && errorDescription?.includes('expired')) {
+          message = 'Le lien de confirmation a expiré. Veuillez vous reconnecter ou créer un nouveau compte.';
+        }
+        
+        // Stocker le message d'erreur et rediriger vers login
+        sessionStorage.setItem('authError', message);
+        window.location.hash = '/login';
+        return;
+      }
+    }
+
     const [path, ...params] = hash.split('/').filter(Boolean);
 
     // Nettoyer le conteneur
