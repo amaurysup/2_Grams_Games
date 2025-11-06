@@ -2,11 +2,13 @@ export class LandingPage {
   private container: HTMLElement;
 
   constructor(containerId: string) {
+    console.log('🎯 LandingPage - Constructor appelé');
     const element = document.getElementById(containerId);
     if (!element) throw new Error(`Element with id ${containerId} not found`);
     
     this.container = element;
     this.render();
+    console.log('✅ LandingPage - Render terminé');
   }
 
   private render(): void {
@@ -34,10 +36,6 @@ export class LandingPage {
             <a href="#" data-route="/games" class="landing-hero-full__cta">
               Trouve ton jeu 🚀
             </a>
-
-            <p class="landing-hero-full__footnote">
-              Gratuit · Sans inscription · Sans prise de tête
-            </p>
 
             <div class="landing-hero-full__warning">
               ⚠️ L'abus d'alcool est dangereux pour la santé

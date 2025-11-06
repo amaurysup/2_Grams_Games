@@ -33,6 +33,8 @@ export class Router {
 
   private route(): void {
     const hash = window.location.hash.slice(1) || '/';
+    console.log('🔍 Router - Hash complet:', window.location.hash);
+    console.log('🔍 Router - Hash après slice:', hash);
     
     // Gérer les erreurs d'authentification (ex: lien de confirmation expiré)
     if (hash.includes('error=')) {
@@ -54,6 +56,8 @@ export class Router {
     }
 
     const [path, ...params] = hash.split('/').filter(Boolean);
+    console.log('🔍 Router - Path extrait:', path);
+    console.log('🔍 Router - Params:', params);
 
     // Nettoyer le conteneur
     const container = document.getElementById(this.appContainer);
@@ -61,12 +65,15 @@ export class Router {
     container.innerHTML = '';
 
     switch (path) {
+      case undefined:
       case '':
       case 'home':
+        console.log('✅ Router - Chargement de LandingPage');
         new LandingPage(this.appContainer);
         break;
       
       case 'games':
+        console.log('✅ Router - Chargement de HomePage (jeux)');
         new HomePage(this.appContainer);
         break;
       
