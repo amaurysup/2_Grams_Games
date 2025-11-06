@@ -1,4 +1,5 @@
 import { HomePage } from './pages/HomePage';
+import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { GameDetailPage } from './pages/GameDetailPage';
@@ -62,6 +63,10 @@ export class Router {
     switch (path) {
       case '':
       case 'home':
+        new LandingPage(this.appContainer);
+        break;
+      
+      case 'games':
         new HomePage(this.appContainer);
         break;
       

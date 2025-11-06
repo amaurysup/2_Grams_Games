@@ -26,6 +26,7 @@ export class Navbar {
           <h1 class="logo"><a href="#" data-route="/" style="color: inherit; text-decoration: none;">2 GRAMS GAMES</a></h1>
           <div class="nav-links">
             <a href="#" data-route="/" class="nav-link">Accueil</a>
+            <a href="#" data-route="/games" class="nav-link">🎮 Jeux</a>
             ${isAuthenticated && user ? `
               <span class="nav-user">👤 ${user.email}</span>
               <button class="btn-logout" id="logoutBtn">Déconnexion</button>
