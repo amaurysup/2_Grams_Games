@@ -585,3 +585,309 @@ body {
         padding: 2rem;
     }
 }
+
+:root {
+    --themes-bg: #0F0F14;
+    --themes-surface: #171722;
+    --themes-surface-alt: #1E1E2A;
+    --themes-primary: #7C5CFF;
+    --themes-secondary: #00E0A4;
+    --themes-accent1: #FF6B6B;
+    --themes-accent2: #FFD166;
+    --themes-text-primary: #F5F7FA;
+    --themes-text-secondary: #A7B0C0;
+    --themes-border-subtle: rgba(255, 255, 255, 0.06);
+}
+
+.themes-screen {
+    background: var(--themes-bg);
+    color: var(--themes-text-primary);
+    min-height: calc(100vh - 120px);
+    padding-bottom: 48px;
+}
+
+.themes-header {
+    padding: 24px 24px 16px;
+    position: sticky;
+    top: 0;
+    background: linear-gradient(180deg, rgba(15, 15, 20, 0.96) 0%, rgba(15, 15, 20, 0.85) 85%, rgba(15, 15, 20, 0) 100%);
+    backdrop-filter: blur(12px);
+    z-index: 10;
+}
+
+.themes-header__title {
+    font-size: clamp(30px, 5vw, 36px);
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    outline: none;
+}
+
+.themes-header__subtitle {
+    margin-top: 6px;
+    color: var(--themes-text-secondary);
+    font-size: clamp(15px, 3.6vw, 18px);
+}
+
+.themes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 0 0 0 0;
+}
+
+.theme-block {
+    padding: 0 24px;
+}
+
+.theme-block__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.theme-block__accent {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.theme-block__title {
+    font-size: clamp(22px, 4.5vw, 28px);
+    font-weight: 600;
+    color: var(--themes-text-primary);
+    outline: none;
+}
+
+.theme-block__meta {
+    margin-left: auto;
+    color: var(--themes-text-secondary);
+    font-size: 14px;
+}
+
+.theme-carousel {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 6px 24px 6px 24px;
+    margin: 0 -24px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.theme-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.theme-game-card {
+    background: var(--themes-surface-alt);
+    border-radius: 22px;
+    border: 1px solid var(--themes-border-subtle);
+    padding: 18px;
+    min-width: 156px;
+    max-width: 176px;
+    min-height: 192px;
+    scroll-snap-align: start;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 180ms ease, box-shadow 200ms ease, opacity 180ms ease;
+    touch-action: manipulation;
+}
+
+.theme-game-card:focus-visible {
+    outline: 2px solid var(--themes-primary);
+    outline-offset: 4px;
+}
+
+.theme-game-card:active {
+    transform: scale(0.97);
+    opacity: 0.94;
+}
+
+.theme-game-card__badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--themes-text-primary);
+    letter-spacing: 0.3px;
+}
+
+.theme-game-card__emoji {
+    font-size: 28px;
+    margin-bottom: 16px;
+}
+
+.theme-game-card__title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--themes-text-primary);
+    margin-bottom: 28px;
+}
+
+.theme-game-card__cta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.theme-game-card__cta-text {
+    color: var(--themes-primary);
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.theme-game-card__cta-chevron {
+    color: var(--themes-primary);
+    font-size: 18px;
+}
+
+.themes-skeleton {
+    padding: 12px 24px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.themes-skeleton__section {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.themes-skeleton__title {
+    width: 200px;
+    height: 22px;
+    border-radius: 12px;
+    background: var(--themes-surface);
+}
+
+.themes-skeleton__carousel {
+    display: flex;
+    gap: 16px;
+}
+
+.themes-skeleton__card {
+    background: var(--themes-surface-alt);
+    border-radius: 22px;
+    width: 156px;
+    height: 192px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    opacity: 0.6;
+}
+
+.themes-skeleton__badge {
+    width: 72px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--themes-surface);
+}
+
+.themes-skeleton__emoji {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    background: var(--themes-surface);
+}
+
+.themes-skeleton__line {
+    height: 14px;
+    border-radius: 10px;
+    background: var(--themes-surface);
+}
+
+.themes-skeleton__line--title {
+    width: 110px;
+}
+
+.themes-error,
+.themes-empty {
+    padding: 56px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+}
+
+.themes-error__emoji,
+.themes-empty__emoji {
+    font-size: 44px;
+    margin-bottom: 6px;
+}
+
+.themes-error__title,
+.themes-empty__title {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.themes-error__subtitle,
+.themes-empty__subtitle {
+    color: var(--themes-text-secondary);
+    max-width: 320px;
+}
+
+.themes-error__button {
+    margin-top: 16px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    background: var(--themes-primary);
+    color: var(--themes-text-primary);
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: transform 180ms ease, box-shadow 200ms ease;
+}
+
+.themes-error__button:focus-visible {
+    outline: 2px solid var(--themes-text-primary);
+    outline-offset: 3px;
+}
+
+.themes-error__button:active {
+    transform: scale(0.97);
+}
+
+@media (max-width: 768px) {
+    .themes-header {
+        padding: 24px 20px 12px;
+    }
+
+    .theme-block {
+        padding: 0 20px;
+    }
+
+    .theme-carousel {
+        padding: 6px 20px;
+        margin: 0 -20px;
+        gap: 14px;
+    }
+
+    .theme-game-card {
+        min-width: 148px;
+        min-height: 184px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .theme-game-card,
+    .themes-error__button {
+        transition: none;
+    }
+
+    .theme-game-card:active,
+    .themes-error__button:active {
+        transform: none;
+    }
+}
