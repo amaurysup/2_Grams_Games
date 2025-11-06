@@ -87,8 +87,8 @@ export class Router {
         break;
       
       case 'game':
-        const gameId = parseInt(params[0]);
-        if (!isNaN(gameId)) {
+        const gameId = params[0];
+        if (gameId) {
           new GameDetailPage(this.appContainer, gameId);
         }
         break;

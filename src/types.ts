@@ -1,12 +1,19 @@
 export interface Game {
-  id: number;
-  title: string;
+  id: string;
+  theme_id: string;
+  name: string;
   description: string;
-  icon: string;
-  color: 'pink' | 'yellow' | 'turquoise';
-  rules: string[];
-  players: string;
-  duration: string;
+  rules: string;
+  created_at: string;
+}
+
+export interface Theme {
+  id: string;
+  name: string;
+  description: string;
+  emoji: string;
+  created_at: string;
+  games?: Game[];
 }
 
 export interface User {

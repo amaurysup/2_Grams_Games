@@ -1,5 +1,5 @@
-import type { Theme, Game as ThemeGame } from '../themes.mock';
-import { THEMES } from '../themes.mock';
+import { supabase } from '../lib/supabase';
+import type { Theme, Game } from '../types';
 
 export class HomePage {
   private container: HTMLElement;
@@ -31,13 +31,55 @@ export class HomePage {
 
   private async loadThemes(): Promise<void> {
     try {
-      // Simulate async loading to display skeletons
-      await new Promise((resolve) => setTimeout(resolve, 450));
-      this.state.themes = THEMES;
-      this.focusedThemeId = THEMES[0]?.id ?? null;
+      console.log('🔄 Chargement des thèmes depuis Supabase...');
+      
+      // Récupérer tous les thèmes
+      const { data: themes, error: themesError } = await supabase
+        .from('themes')
+        .select('*')
+        .order('created_at', { ascending: true });
+
+      if (themesError) throw themesError;
+      if (!themes) throw new Error('Aucun thème trouvé');
+
+      console.log('✅ Thèmes récupérés:', themes);
+
+      // Pour chaque thème, récupérer ses jeux depuis toutes les tables
+      const themesWithGames: Theme[] = await Promise.all(
+        themes.map(async (theme) => {
+          const allGames: Game[] = [];
+
+          // Récupérer les jeux de chaque table
+          const tables = ['beer_pong', 'chiffres_romains', 'je_nai_jamais', 'jeu_roi'];
+          
+          for (const table of tables) {
+            const { data: games, error } = await supabase
+              .from(table)
+              .select('*')
+              .eq('theme_id', theme.id);
+            
+            if (!error && games) {
+              allGames.push(...games);
+            }
+          }
+
+          console.log(`✅ Jeux pour ${theme.name}:`, allGames.length);
+
+          return {
+            ...theme,
+            games: allGames
+          };
+        })
+      );
+
+      // Filtrer les thèmes qui ont au moins 1 jeu
+      this.state.themes = themesWithGames.filter(t => (t.games?.length ?? 0) > 0);
+      this.focusedThemeId = this.state.themes[0]?.id ?? null;
       this.state.error = false;
+
+      console.log('✅ Thèmes avec jeux:', this.state.themes);
     } catch (error) {
-      console.error('Erreur lors du chargement des thèmes', error);
+      console.error('❌ Erreur lors du chargement des thèmes', error);
       this.state.error = true;
       this.state.themes = [];
     } finally {
@@ -144,27 +186,28 @@ export class HomePage {
   }
 
   private renderTheme(theme: Theme): string {
-    const games = theme.games.map((game) => this.renderGameCard(theme, game)).join('');
-    const badgeColor = theme.accent || '#7C5CFF';
+    const games = (theme.games || []).map((game) => this.renderGameCard(theme, game)).join('');
+    const colors = ['#FF1493', '#FFD700', '#00CED1', '#7C5CFF', '#FF6B6B'];
+    const badgeColor = colors[Math.floor(Math.random() * colors.length)];
+    const gamesCount = theme.games?.length || 0;
 
     return `
       <section class="theme-block" data-theme-id="${theme.id}" aria-labelledby="theme-title-${theme.id}" data-testid="theme-block-${theme.id}">
         <div class="theme-block__header">
           <span class="theme-block__accent" style="background:${badgeColor};"></span>
           <h2 id="theme-title-${theme.id}" class="theme-block__title" tabindex="-1">${theme.emoji} ${theme.name}</h2>
-          <p class="theme-block__meta" aria-hidden="true">${theme.games.length} jeux</p>
+          <p class="theme-block__meta" aria-hidden="true">${gamesCount} jeu${gamesCount > 1 ? 'x' : ''}</p>
         </div>
-        <div class="theme-carousel" role="list" data-testid="theme-carousel-${theme.id}" aria-label="${theme.name}, ${theme.games.length} jeux">
+        <div class="theme-carousel" role="list" data-testid="theme-carousel-${theme.id}" aria-label="${theme.name}, ${gamesCount} jeux">
           ${games}
         </div>
       </section>
     `;
   }
 
-  private renderGameCard(theme: Theme, game: ThemeGame): string {
-    const accent = game.accent || theme.accent || '#7C5CFF';
+  private renderGameCard(theme: Theme, game: Game): string {
     const chevron = '›';
-    const ariaLabel = `${game.name}, ${game.tag}. Appuie pour explorer.`;
+    const ariaLabel = `${game.name}. Appuie pour voir les règles.`;
 
     return `
       <article
@@ -176,10 +219,6 @@ export class HomePage {
         data-testid="theme-game-card-${game.id}"
         aria-label="${ariaLabel}"
       >
-        <div class="theme-game-card__badge" style="background:${accent};" data-testid="theme-game-card-${game.id}-badge">
-          <span>${game.tag}</span>
-        </div>
-        <div class="theme-game-card__emoji" aria-hidden="true">${game.iconEmoji}</div>
         <h3 class="theme-game-card__title">${game.name}</h3>
         <div class="theme-game-card__cta">
           <span class="theme-game-card__cta-text">Jouer</span>
@@ -212,7 +251,7 @@ export class HomePage {
 
       const handleActivation = () => {
         this.focusedThemeId = themeId;
-        console.log('onPress', { themeId, gameId });
+        window.location.hash = `/game/${gameId}`;
       };
 
       card.addEventListener('click', handleActivation);
