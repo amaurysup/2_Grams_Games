@@ -31,46 +31,46 @@ export class HomePage {
 
   private async loadThemes(): Promise<void> {
     try {
-      console.log('🔄 Chargement des thèmes depuis Supabase...');
+      console.log('🔄 Chargement des jeux depuis Supabase...');
+
+      // Récupérer tous les jeux
+      const { data: games, error: gamesError } = await supabase
+        .from('jeux')
+        .select('*');
       
-      // Récupérer tous les thèmes
-      const { data: themes, error: themesError } = await supabase
-        .from('themes')
-        .select('*')
-        .order('created_at', { ascending: true });
+      if (gamesError) {
+        console.error('❌ Erreur lors de la récupération des jeux:', gamesError);
+        throw gamesError;
+      }
 
-      if (themesError) throw themesError;
-      if (!themes) throw new Error('Aucun thème trouvé');
+      const allGamesFromDB: Game[] = games || [];
+      console.log('✅ Tous les jeux récupérés:', allGamesFromDB.length);
+      console.log('📝 Détail des jeux:', allGamesFromDB);
 
-      console.log('✅ Thèmes récupérés:', themes);
+      // Créer des "thèmes virtuels" basés sur les booléens
+      const themeDefinitions = [
+        { id: 'chill', name: 'Chill', emoji: '😌', field: 'chill' as keyof Game },
+        { id: 'destruction', name: 'Destruction', emoji: '💥', field: 'destruction' as keyof Game },
+        { id: 'decouverte', name: 'Découverte', emoji: '🔍', field: 'découverte' as keyof Game },
+        { id: 'embrouilles', name: 'Embrouilles', emoji: '🤯', field: 'embrouilles' as keyof Game },
+        { id: 'reflexion', name: 'Réflexion', emoji: '🧠', field: 'réflexion' as keyof Game }
+      ];
 
-      // Pour chaque thème, récupérer ses jeux depuis toutes les tables
-      const themesWithGames: Theme[] = await Promise.all(
-        themes.map(async (theme) => {
-          const allGames: Game[] = [];
+      // Pour chaque thème virtuel, filtrer les jeux qui ont le booléen correspondant à true
+      const themesWithGames: Theme[] = themeDefinitions.map((themeDef) => {
+        const themeGames = allGamesFromDB.filter(game => game[themeDef.field] === true);
+        
+        console.log(`✅ Jeux pour ${themeDef.name}:`, themeGames.length);
 
-          // Récupérer les jeux de chaque table
-          const tables = ['beer_pong', 'chiffres_romains', 'je_nai_jamais', 'jeu_roi'];
-          
-          for (const table of tables) {
-            const { data: games, error } = await supabase
-              .from(table)
-              .select('*')
-              .eq('theme_id', theme.id);
-            
-            if (!error && games) {
-              allGames.push(...games);
-            }
-          }
-
-          console.log(`✅ Jeux pour ${theme.name}:`, allGames.length);
-
-          return {
-            ...theme,
-            games: allGames
-          };
-        })
-      );
+        return {
+          id: themeDef.id,
+          name: themeDef.name,
+          emoji: themeDef.emoji,
+          description: '',
+          created_at: new Date().toISOString(),
+          games: themeGames
+        };
+      });
 
       // Filtrer les thèmes qui ont au moins 1 jeu
       this.state.themes = themesWithGames.filter(t => (t.games?.length ?? 0) > 0);

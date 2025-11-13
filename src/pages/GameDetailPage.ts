@@ -32,22 +32,14 @@ export class GameDetailPage {
     try {
       console.log('🔄 Chargement du jeu:', this.gameId);
       
-      // Chercher le jeu dans toutes les tables
-      const tables = ['beer_pong', 'chiffres_romains', 'je_nai_jamais', 'jeu_roi'];
-      let game: Game | null = null;
+      // Récupérer le jeu depuis la table 'jeux'
+      const { data, error } = await supabase
+        .from('jeux')
+        .select('*')
+        .eq('id', this.gameId)
+        .single();
 
-      for (const table of tables) {
-        const { data, error } = await supabase
-          .from(table)
-          .select('*')
-          .eq('id', this.gameId)
-          .single();
-
-        if (!error && data) {
-          game = data;
-          break;
-        }
-      }
+      const game: Game | null = (!error && data) ? data : null;
 
       if (!game) {
         this.renderError();
@@ -63,9 +55,14 @@ export class GameDetailPage {
   }
 
   private render(game: Game): void {
+    const playButton = game.interactif 
+      ? `<button class="btn-play-game" data-game-id="${game.id}">🎮 Jouer maintenant</button>`
+      : '';
+
     this.container.innerHTML = `
       <div class="game-detail">
         <div class="game-detail-header">
+          ${playButton}
           <h1 class="game-detail-title">🎮 ${game.name}</h1>
         </div>
 
@@ -81,6 +78,18 @@ export class GameDetailPage {
         </div>
       </div>
     `;
+
+    // Attacher l'événement au bouton Jouer si interactif
+    if (game.interactif) {
+      const playBtn = this.container.querySelector('.btn-play-game');
+      if (playBtn) {
+        playBtn.addEventListener('click', () => {
+          console.log('🎮 Lancement du jeu interactif:', game.name);
+          // TODO: Implémenter la logique du jeu interactif
+          alert(`Le jeu "${game.name}" va bientôt être disponible en mode interactif ! 🎉`);
+        });
+      }
+    }
   }
 
   private renderError(): void {

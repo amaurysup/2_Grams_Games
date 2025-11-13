@@ -1,10 +1,15 @@
 export interface Game {
   id: string;
-  theme_id: string;
   name: string;
   description: string;
   rules: string;
   created_at: string;
+  découverte: boolean;
+  réflexion: boolean;
+  destruction: boolean;
+  embrouilles: boolean;
+  chill: boolean;
+  interactif: boolean;
 }
 
 export interface Theme {
