@@ -10,6 +10,7 @@ export interface Game {
   embrouilles: boolean;
   chill: boolean;
   interactif: boolean;
+  image?: string;
 }
 
 export interface Theme {

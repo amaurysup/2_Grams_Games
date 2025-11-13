@@ -208,6 +208,7 @@ export class HomePage {
   private renderGameCard(theme: Theme, game: Game): string {
     const chevron = '›';
     const ariaLabel = `${game.name}. Appuie pour voir les règles.`;
+    const imageUrl = (game as any).image || '';
 
     return `
       <article
@@ -219,6 +220,7 @@ export class HomePage {
         data-testid="theme-game-card-${game.id}"
         aria-label="${ariaLabel}"
       >
+        ${imageUrl ? `<img src="${imageUrl}" alt="${game.name}" class="theme-game-card__image" />` : ''}
         <h3 class="theme-game-card__title">${game.name}</h3>
         <div class="theme-game-card__cta">
           <span class="theme-game-card__cta-text">Jouer</span>

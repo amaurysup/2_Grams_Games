@@ -891,6 +891,14 @@ body {
     margin-bottom: 16px;
 }
 
+.theme-game-card__image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 12px;
+}
+
 .theme-game-card__title {
     font-size: 18px;
     font-weight: 600;
