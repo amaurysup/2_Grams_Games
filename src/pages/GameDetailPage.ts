@@ -100,11 +100,15 @@ export class GameDetailPage {
             return;
           }
           
-          // Charger dynamiquement le jeu de dés uniquement pour "Jeu des transports"
+          // Charger dynamiquement le jeu correspondant
           if (game.name === 'Jeu des transports') {
             const { DiceGame } = await import('../games/DiceGame');
             const diceGame = new DiceGame(game.name, user.id);
             diceGame.open();
+          } else if (game.name === 'Undercover') {
+            const { UndercoverGame } = await import('../games/UndercoverGame');
+            const undercoverGame = new UndercoverGame(game.name, user.id);
+            undercoverGame.open();
           } else {
             alert(`Le jeu "${game.name}" va bientôt être disponible en mode interactif ! 🎉`);
           }
