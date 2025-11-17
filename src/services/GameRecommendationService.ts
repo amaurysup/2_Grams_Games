@@ -186,7 +186,7 @@ export class GameRecommendationService {
   /**
    * Génère une réponse naturelle basée sur les recommandations
    */
-  private generateResponse(criteria: any, recommendations: GameRecommendation[]): string {
+  private generateResponse(_criteria: any, recommendations: GameRecommendation[]): string {
     if (recommendations.length === 0) {
       return "Hmm, je n'ai pas trouvé de jeu qui correspond exactement à ça... 🤔 Essaye de me dire ce que tu recherches : une ambiance calme ? intense ? un jeu de découverte ? Ou dis-moi juste combien vous êtes !";
     }

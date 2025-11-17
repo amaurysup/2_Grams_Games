@@ -1,5 +1,5 @@
 import { Game } from '../types';
-import { GameRecommendationService, GameRecommendation, Message } from '../services/GameRecommendationService';
+import { GameRecommendationService, GameRecommendation } from '../services/GameRecommendationService';
 
 export class GameChatbot {
   private container: HTMLElement;
@@ -117,7 +117,7 @@ export class GameChatbot {
     input.value = '';
 
     // Masquer les suggestions après le premier message
-    const suggestionsContainer = this.container.querySelector('#chatbot-suggestions');
+    const suggestionsContainer = this.container.querySelector('#chatbot-suggestions') as HTMLElement;
     if (suggestionsContainer) {
       suggestionsContainer.style.display = 'none';
     }
