@@ -56,7 +56,7 @@ export class GameDetailPage {
 
   private render(game: Game): void {
     const playButton = game.interactif 
-      ? `<button class="btn-play-game" data-game-id="${game.id}">🎮 Jouer maintenant</button>`
+      ? `<button class="btn-play-game" data-game-id="${game.id}" data-game-name="${game.name}">🎮 Jouer maintenant</button>`
       : '';
 
     this.container.innerHTML = `
@@ -83,10 +83,31 @@ export class GameDetailPage {
     if (game.interactif) {
       const playBtn = this.container.querySelector('.btn-play-game');
       if (playBtn) {
-        playBtn.addEventListener('click', () => {
+        playBtn.addEventListener('click', async () => {
           console.log('🎮 Lancement du jeu interactif:', game.name);
-          // TODO: Implémenter la logique du jeu interactif
-          alert(`Le jeu "${game.name}" va bientôt être disponible en mode interactif ! 🎉`);
+          
+          // Vérifier l'authentification
+          const { data: { user } } = await supabase.auth.getUser();
+          
+          if (!user) {
+            const goToLogin = confirm(
+              'Vous devez être connecté pour jouer en mode interactif !\n\n' +
+              'Cliquez sur OK pour aller à la page de connexion.'
+            );
+            if (goToLogin) {
+              window.location.hash = '/login';
+            }
+            return;
+          }
+          
+          // Charger dynamiquement le jeu de dés uniquement pour "Jeu des transports"
+          if (game.name === 'Jeu des transports') {
+            const { DiceGame } = await import('../games/DiceGame');
+            const diceGame = new DiceGame(game.name, user.id);
+            diceGame.open();
+          } else {
+            alert(`Le jeu "${game.name}" va bientôt être disponible en mode interactif ! 🎉`);
+          }
         });
       }
     }

@@ -53,7 +53,8 @@ export class HomePage {
         { id: 'destruction', name: 'Destruction', emoji: '💥', field: 'destruction' as keyof Game },
         { id: 'decouverte', name: 'Découverte', emoji: '🔍', field: 'découverte' as keyof Game },
         { id: 'embrouilles', name: 'Embrouilles', emoji: '🤯', field: 'embrouilles' as keyof Game },
-        { id: 'reflexion', name: 'Réflexion', emoji: '🧠', field: 'réflexion' as keyof Game }
+        { id: 'reflexion', name: 'Réflexion', emoji: '🧠', field: 'réflexion' as keyof Game },
+        { id: 'exploration', name: 'Exploration', emoji: '🗺️', field: 'exploration' as keyof Game }
       ];
 
       // Pour chaque thème virtuel, filtrer les jeux qui ont le booléen correspondant à true
