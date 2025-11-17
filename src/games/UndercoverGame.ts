@@ -384,22 +384,4 @@ export class UndercoverGame {
       console.error('Erreur lors de la sauvegarde:', error);
     }
   }
-
-  /**
-   * Chargement de l'état du jeu
-   */
-  private loadGameState(): boolean {
-    const key = `undercoverGame_${this.userId}`;
-    try {
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        this.gameState = JSON.parse(saved);
-        console.log('🕵️ Partie restaurée');
-        return true;
-      }
-    } catch (error) {
-      console.error('Erreur lors du chargement:', error);
-    }
-    return false;
-  }
 }
