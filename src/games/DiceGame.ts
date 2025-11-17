@@ -259,14 +259,22 @@ export class DiceGame {
   }
 
   private handleStartGame(): void {
-    const playerCountInput = document.getElementById('playerCount') as HTMLInputElement;
-    const playerCount = playerCountInput?.value ? parseInt(playerCountInput.value) : 2;
-    
+    // Compter combien d'inputs de joueurs il y a
     this.players = [];
-    for (let i = 1; i <= playerCount; i++) {
+    let i = 1;
+    
+    while (true) {
       const input = document.getElementById(`player${i}`) as HTMLInputElement;
-      const name = input?.value.trim() || `Joueur ${i}`;
+      if (!input) break;
+      
+      const name = input.value.trim() || `Joueur ${i}`;
       this.players.push({ name, totalDrinks: 0 });
+      i++;
+    }
+
+    if (this.players.length === 0) {
+      alert('Aucun joueur trouvé !');
+      return;
     }
 
     this.gameStarted = true;
