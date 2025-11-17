@@ -111,6 +111,13 @@ export class GameDetailPage {
             const { UndercoverGame } = await import('../games/UndercoverGame');
             const undercoverGame = new UndercoverGame(game.name, user.id);
             undercoverGame.open();
+          } else if (gameName === 'piccola' || gameName.includes('piccola')) {
+            const { PiccolaGame } = await import('../games/PiccolaGame');
+            const modalContainer = document.createElement('div');
+            modalContainer.id = 'piccola-game-container';
+            document.body.appendChild(modalContainer);
+            const piccolaGame = new PiccolaGame(modalContainer);
+            piccolaGame.start(user.id);
           } else {
             alert(`Le jeu "${game.name}" va bientôt être disponible en mode interactif ! 🎉`);
           }

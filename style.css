@@ -2561,3 +2561,338 @@ body {
         flex-direction: column;
     }
 }
+
+/* ========== PICCOLA GAME STYLES ========== */
+
+.piccola-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.piccola-modal {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    position: relative;
+    animation: piccolaSlideIn 0.5s ease-out;
+}
+
+@keyframes piccolaSlideIn {
+    from {
+        transform: translateY(-50px) scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.piccola-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.piccola-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.piccola-header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.game-progress {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    opacity: 0.95;
+}
+
+/* Setup Screen */
+.piccola-setup {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.setup-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.setup-section label {
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.setup-input {
+    padding: 0.8rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s;
+}
+
+.setup-input:focus {
+    outline: none;
+    border-color: var(--yellow);
+    background: rgba(255, 255, 255, 0.25);
+}
+
+#player-names-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.player-name-input {
+    padding: 0.8rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s;
+}
+
+.player-name-input:focus {
+    outline: none;
+    border-color: var(--yellow);
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.02);
+}
+
+.player-name-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Game Screen */
+.piccola-game {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card-display {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    border-radius: 15px;
+    padding: 2.5rem;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: cardFlip 0.6s ease-out;
+}
+
+@keyframes cardFlip {
+    0% {
+        transform: rotateY(90deg);
+        opacity: 0;
+    }
+    100% {
+        transform: rotateY(0);
+        opacity: 1;
+    }
+}
+
+.card-type {
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+}
+
+.card-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+    line-height: 1.6;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.game-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-primary {
+    flex: 1;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--yellow) 0%, #ffa500 100%);
+    color: var(--dark);
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+}
+
+.btn-primary:active {
+    transform: translateY(-1px);
+}
+
+.game-options {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-secondary {
+    flex: 1;
+    padding: 0.8rem 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Poppins', sans-serif;
+    min-width: 150px;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    flex: 1;
+    padding: 0.8rem 1.5rem;
+    background: rgba(231, 76, 60, 0.8);
+    color: white;
+    border: 2px solid rgba(231, 76, 60, 1);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Poppins', sans-serif;
+    min-width: 150px;
+}
+
+.btn-danger:hover {
+    background: rgba(231, 76, 60, 1);
+    transform: translateY(-2px);
+}
+
+.btn-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.btn-close:hover {
+    background: rgba(231, 76, 60, 0.8);
+    transform: rotate(90deg);
+}
+
+/* Game Over Screen */
+.game-over {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.game-over-text {
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.game-over-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 2rem;
+}
+
+.game-over-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .piccola-modal {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    .piccola-header h2 {
+        font-size: 2rem;
+    }
+
+    .card-display {
+        padding: 2rem;
+        min-height: 200px;
+    }
+
+    .card-text {
+        font-size: 1.1rem;
+    }
+
+    .game-options {
+        flex-direction: column;
+    }
+
+    .btn-secondary,
+    .btn-danger {
+        min-width: 100%;
+    }
+
+    .game-over-actions {
+        flex-direction: column;
+    }
+}
