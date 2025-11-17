@@ -101,11 +101,13 @@ export class GameDetailPage {
           }
           
           // Charger dynamiquement le jeu correspondant
-          if (game.name === 'Jeu des transports') {
+          const gameName = game.name.toLowerCase().trim();
+          
+          if (gameName === 'jeu des transports' || gameName.includes('transport')) {
             const { DiceGame } = await import('../games/DiceGame');
             const diceGame = new DiceGame(game.name, user.id);
             diceGame.open();
-          } else if (game.name === 'Undercover') {
+          } else if (gameName === 'undercover' || gameName.includes('undercover')) {
             const { UndercoverGame } = await import('../games/UndercoverGame');
             const undercoverGame = new UndercoverGame(game.name, user.id);
             undercoverGame.open();

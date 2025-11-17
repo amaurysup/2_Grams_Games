@@ -14,6 +14,7 @@ interface GameState {
 }
 
 export class UndercoverGame {
+  private overlay: HTMLElement;
   private modal: HTMLElement;
   private gameState: GameState;
   private gameName: string;
@@ -22,8 +23,17 @@ export class UndercoverGame {
   constructor(gameName: string, userId: string) {
     this.gameName = gameName;
     this.userId = userId;
+    
+    // Créer l'overlay
+    this.overlay = document.createElement('div');
+    this.overlay.className = 'game-modal-overlay';
+    
+    // Créer le modal
     this.modal = document.createElement('div');
     this.modal.className = 'game-modal';
+    
+    // Ajouter le modal dans l'overlay
+    this.overlay.appendChild(this.modal);
     
     this.gameState = {
       secretWord: '',
@@ -34,13 +44,13 @@ export class UndercoverGame {
   }
 
   open() {
-    document.body.appendChild(this.modal);
+    document.body.appendChild(this.overlay);
     this.renderPlayerSetup();
   }
 
   close() {
     this.saveGameState();
-    this.modal.remove();
+    this.overlay.remove();
   }
 
   /**
