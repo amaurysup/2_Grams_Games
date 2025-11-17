@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import type { Theme, Game } from '../types';
+import { GameChatbot } from '../components/GameChatbot';
 
 export class HomePage {
   private container: HTMLElement;
@@ -7,8 +8,10 @@ export class HomePage {
     loading: boolean;
     error: boolean;
     themes: Theme[];
+    allGames: Game[];
   };
   private focusedThemeId: string | null;
+  private chatbot: GameChatbot | null;
 
   constructor(containerId: string) {
     const element = document.getElementById(containerId);
@@ -19,8 +22,10 @@ export class HomePage {
       loading: true,
       error: false,
       themes: [],
+      allGames: [],
     };
     this.focusedThemeId = null;
+    this.chatbot = null;
     void this.init();
   }
 
@@ -77,8 +82,12 @@ export class HomePage {
       this.state.themes = themesWithGames.filter(t => (t.games?.length ?? 0) > 0);
       this.focusedThemeId = this.state.themes[0]?.id ?? null;
       this.state.error = false;
+      this.state.allGames = allGamesFromDB;
 
       console.log('✅ Thèmes avec jeux:', this.state.themes);
+      
+      // Initialiser le chatbot avec tous les jeux
+      this.initChatbot();
     } catch (error) {
       console.error('❌ Erreur lors du chargement des thèmes', error);
       this.state.error = true;
@@ -87,6 +96,40 @@ export class HomePage {
       this.state.loading = false;
       this.render();
     }
+  }
+
+  private initChatbot(): void {
+    if (this.state.allGames.length === 0) return;
+    
+    this.chatbot = new GameChatbot(this.state.allGames, (gameId) => {
+      window.location.hash = `/game/${gameId}`;
+    });
+    
+    // Ajouter le chatbot au DOM
+    document.body.appendChild(this.chatbot.render());
+    
+    // Ajouter le bouton flottant
+    this.addChatbotButton();
+  }
+
+  private addChatbotButton(): void {
+    // Vérifier si le bouton existe déjà
+    if (document.getElementById('chatbot-fab')) return;
+    
+    const fab = document.createElement('button');
+    fab.id = 'chatbot-fab';
+    fab.className = 'chatbot-fab';
+    fab.setAttribute('aria-label', 'Ouvrir l\'assistant de jeux');
+    fab.innerHTML = `
+      <span class="fab-icon">🤖</span>
+      <span class="fab-pulse"></span>
+    `;
+    
+    fab.addEventListener('click', () => {
+      this.chatbot?.toggle();
+    });
+    
+    document.body.appendChild(fab);
   }
 
   private render(): void {
