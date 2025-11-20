@@ -121,12 +121,12 @@ export const PICCOLA_CARDS: PiccolaCard[] = [
   {
     id: 22,
     type: 'question',
-    text: '{player1}, raconte la dernière fois où tu as fait quelque chose d\'illégal. Refuse = 5 gorgées'
+    text: '{player1}, raconte la chose la plus illégalé que tu aies faite. Refuse = 5 gorgées'
   },
   {
     id: 23,
     type: 'question',
-    text: '{player1}, cite 3 personnes présentes avec qui tu sortirais. Si tu refuses, bois 5 gorgées'
+    text: '{player1}, donnee 2 qualités et 2 défauts de {player2}. Si tu refuses, bois 5 gorgées'
   },
   {
     id: 24,

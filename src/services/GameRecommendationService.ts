@@ -128,6 +128,24 @@ export class GameRecommendationService {
       let score = 0;
       const reasons: string[] = [];
 
+      // Filtrage strict par nombre de joueurs
+      if (criteria.playerCount) {
+        const playerCount = criteria.playerCount;
+        const minPlayers = game.joueurs_min || 0;
+        const maxPlayers = game.joueurs_max; // null = pas de limite
+        
+        // Vérifier si le jeu est compatible avec le nombre de joueurs
+        const isCompatible = playerCount >= minPlayers && (maxPlayers === null || maxPlayers === undefined || playerCount <= maxPlayers);
+        
+        if (!isCompatible) {
+          // Retourner score 0 si incompatible
+          return { game, score: 0, reason: 'Nombre de joueurs incompatible' };
+        } else {
+          score += 40; // Bonus important si compatible
+          reasons.push(`Compatible ${playerCount} joueur${playerCount > 1 ? 's' : ''}`);
+        }
+      }
+
       // Score basé sur les thèmes
       if (criteria.themes.length > 0) {
         let themeMatches = 0;
@@ -186,8 +204,11 @@ export class GameRecommendationService {
   /**
    * Génère une réponse naturelle basée sur les recommandations
    */
-  private generateResponse(_criteria: any, recommendations: GameRecommendation[]): string {
+  private generateResponse(criteria: any, recommendations: GameRecommendation[]): string {
     if (recommendations.length === 0) {
+      if (criteria.playerCount) {
+        return `Désolé, je n'ai pas trouvé de jeu pour ${criteria.playerCount} joueur${criteria.playerCount > 1 ? 's' : ''} avec ces critères... 😕 Essaye avec d'autres critères ou un nombre de joueurs différent !`;
+      }
       return "Hmm, je n'ai pas trouvé de jeu qui correspond exactement à ça... 🤔 Essaye de me dire ce que tu recherches : une ambiance calme ? intense ? un jeu de découverte ? Ou dis-moi juste combien vous êtes !";
     }
 

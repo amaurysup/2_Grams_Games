@@ -12,6 +12,8 @@ export interface Game {
   interactif: boolean;
   exploration: boolean;
   image?: string;
+  joueurs_min?: number;
+  joueurs_max?: number | null;
 }
 
 export interface Theme {

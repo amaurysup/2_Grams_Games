@@ -118,6 +118,13 @@ export class GameDetailPage {
             document.body.appendChild(modalContainer);
             const piccolaGame = new PiccolaGame(modalContainer);
             piccolaGame.start(user.id);
+          } else if (gameName === 'roulette' || gameName.includes('roulette')) {
+            const { RouletteGame } = await import('../games/RouletteGame');
+            const modalContainer = document.createElement('div');
+            modalContainer.id = 'roulette-game-container';
+            document.body.appendChild(modalContainer);
+            const rouletteGame = new RouletteGame(modalContainer);
+            rouletteGame.start(user.id);
           } else {
             alert(`Le jeu "${game.name}" va bientôt être disponible en mode interactif ! 🎉`);
           }
