@@ -153,21 +153,24 @@ export class HomePage {
 
     if (loading) {
       return `
-        <section class="themes-screen" data-testid="themes-screen">
-          ${header}
-          <div class="themes-skeleton" role="status" aria-live="polite">
-            ${this.renderSkeleton()}
-          </div>
-        </section>
+        <div class="home-page">
+          <section class="themes-screen" data-testid="themes-screen">
+            ${header}
+            <div class="themes-skeleton" role="status" aria-live="polite">
+              ${this.renderSkeleton()}
+            </div>
+          </section>
+        </div>
       `;
     }
 
     if (error) {
       return `
-        <section class="themes-screen" data-testid="themes-screen">
-          ${header}
-          <div class="themes-error" role="alert">
-            <div class="themes-error__emoji">😵</div>
+        <div class="home-page">
+          <section class="themes-screen" data-testid="themes-screen">
+            ${header}
+            <div class="themes-error" role="alert">
+              <div class="themes-error__emoji">😵</div>
             <h2 class="themes-error__title">Une petite soif d'internet ?</h2>
             <p class="themes-error__subtitle">Le chargement a échoué. Vérifie ta connexion puis réessaie.</p>
             <button class="themes-error__button" data-testid="themes-retry">Réessayer</button>
@@ -178,26 +181,30 @@ export class HomePage {
 
     if (themes.length === 0) {
       return `
-        <section class="themes-screen" data-testid="themes-screen">
-          ${header}
-          <div class="themes-empty" role="status">
-            <div class="themes-empty__emoji">🕹️</div>
-            <h2 class="themes-empty__title">Rien à afficher</h2>
-            <p class="themes-empty__subtitle">Reviens plus tard pour découvrir de nouveaux thèmes.</p>
-          </div>
-        </section>
+        <div class="home-page">
+          <section class="themes-screen" data-testid="themes-screen">
+            ${header}
+            <div class="themes-empty" role="status">
+              <div class="themes-empty__emoji">🕹️</div>
+              <h2 class="themes-empty__title">Rien à afficher</h2>
+              <p class="themes-empty__subtitle">Reviens plus tard pour découvrir de nouveaux thèmes.</p>
+            </div>
+          </section>
+        </div>
       `;
     }
 
     const themesSections = themes.map((theme) => this.renderTheme(theme)).join('');
 
     return `
-      <section class="themes-screen" data-testid="themes-screen">
-        ${header}
-        <div class="themes-list" data-testid="themes-list">
-          ${themesSections}
-        </div>
-      </section>
+      <div class="home-page">
+        <section class="themes-screen" data-testid="themes-screen">
+          ${header}
+          <div class="themes-list" data-testid="themes-list">
+            ${themesSections}
+          </div>
+        </section>
+      </div>
     `;
   }
 
