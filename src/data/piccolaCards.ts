@@ -576,6 +576,78 @@ export const PICCOLA_CARDS: PiccolaCard[] = [
 ];
 
 /**
+ * Cartes DÉMO - Ces cartes apparaissent en premier à chaque partie
+ * Pour la présentation du jeu
+ */
+export const DEMO_CARDS: PiccolaCard[] = [
+  {
+    id: 111,
+    type: 'vote',
+    text: 'À votre sens, qui est la personne de la salle avec la verge la plus veineuse ? La personne qui sera la plus montrée du doigt doit boire 5 gorgées.'
+  },
+  {
+    id: 112,
+    type: 'action',
+    text: 'Chacun donne un Hot Take. Celui qui a le meilleur hot take distribue 5 gorgées.'
+  },
+  {
+    id: 113,
+    type: 'action',
+    text: 'Tout le monde sort le blaz d\'une actrice porno. Le premier qui n\'en a pas boit 5 gorgées.'
+  },
+  {
+    id: 114,
+    type: 'dare',
+    text: '{player1} et {player2} jouent à la barbichette. Le premier qui rigole boit cul sec son verre.'
+  },
+  {
+    id: 115,
+    type: 'action',
+    text: 'Tout le monde essaie de deviner où se trouve la Mecque en pointant du doigt. Celui qui est le plus loin boit 5 gorgées. Vérifiez sur Qibla Finder.'
+  },
+  {
+    id: 116,
+    type: 'dare',
+    text: '{player1} et {player2} défiez-vous sur https://linkterpol.fr/ ! Le premier qui perd boit 5 gorgées.'
+  },
+  {
+    id: 117,
+    type: 'dare',
+    text: '{player1} scrolle 5 fois dans sa galerie photos. À l\'arrêt, tu cliques sur une photo. Si tu ne veux pas la montrer, tu bois cul sec ton verre.'
+  },
+  {
+    id: 118,
+    type: 'action',
+    text: '{player1} et {player2} doivent donner la météo d\'une ville au hasard dans le monde, déterminée par {player3} (température et indice UV). Le plus éloigné de la réalité boit 5 gorgées.'
+  },
+  {
+    id: 119,
+    type: 'dare',
+    text: '{player1}, ouvre ton clavier et écris une phrase à ta mère uniquement avec les suggestions. Tu envoies… ou tu bois cul sec.'
+  },
+  {
+    id: 120,
+    type: 'action',
+    text: 'Chacun note sur son téléphone le chrono du record du monde de Bolt sur 100 m. On révèle en même temps : celui qui est le plus loin de la bonne réponse boit 5 gorgées.'
+  },
+  {
+    id: 121,
+    type: 'dare',
+    text: 'Si quelqu\'un n\'a jamais regardé de vidéo du Palmashow, il finit cul sec son verre et doit faire un gage ridicule choisi par le groupe.'
+  },
+  {
+    id: 122,
+    type: 'question',
+    text: 'Si vous pouviez envoyer une catégorie de personnes faire des travaux d\'intérêt général pendant un an, laquelle choisiriez-vous ? Celui qui choque le plus boit 5 gorgées.'
+  },
+  {
+    id: 123,
+    type: 'action',
+    text: '{player1} et {player2} cherchent dans leur tel le reel / TikTok le plus drôle selon eux. Ils le montrent aux autres qui votent pour le plus marrant. Le perdant boit 5 gorgées.'
+  }
+];
+
+/**
  * Fonction helper pour remplacer les placeholders par les vrais prénoms
  * Supporte de 1 à 10 joueurs dynamiquement
  */
@@ -637,7 +709,7 @@ export function getCardWithRandomPlayers(card: PiccolaCard, playerNames: string[
 
 /**
  * Fonction pour mélanger les cartes (shuffle Fisher-Yates)
- * Mélange les 110 cartes au début de la partie
+ * Mélange les cartes dans un ordre aléatoire
  */
 export function shuffleCards(cards: PiccolaCard[]): PiccolaCard[] {
   const shuffled = [...cards];
@@ -650,8 +722,16 @@ export function shuffleCards(cards: PiccolaCard[]): PiccolaCard[] {
 
 /**
  * Fonction pour obtenir un deck mélangé complet
- * Utilise toutes les 110 cartes dans un ordre aléatoire
+ * Les cartes DÉMO apparaissent en premier (dans l'ordre),
+ * puis les autres cartes sont mélangées aléatoirement
  */
 export function getShuffledDeck(): PiccolaCard[] {
-  return shuffleCards(PICCOLA_CARDS);
+  // Cartes démo en premier (dans l'ordre)
+  const demoCards = [...DEMO_CARDS];
+  
+  // Cartes classiques mélangées ensuite
+  const shuffledRegularCards = shuffleCards(PICCOLA_CARDS);
+  
+  // Retourner démo + mélangées
+  return [...demoCards, ...shuffledRegularCards];
 }
