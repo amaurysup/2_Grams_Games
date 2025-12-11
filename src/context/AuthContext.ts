@@ -103,6 +103,17 @@ class AuthContext {
     this.listeners.forEach(listener => listener(this.authState));
   }
 
+  /**
+   * Rafraîchit les données utilisateur depuis le profil
+   * Utile après une mise à jour du profil (avatar, etc.)
+   */
+  async refreshUser(): Promise<void> {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      await this.setUserFromSupabase(session.user);
+    }
+  }
+
   async signUp(email: string, password: string, username: string): Promise<{ success: boolean; error?: string }> {
     try {
       // Vérifier si le username existe déjà

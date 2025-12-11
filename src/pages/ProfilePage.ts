@@ -123,9 +123,14 @@ export class ProfilePage {
                </div>`
           }
           ${this.isOwnProfile ? `
-            <button class="profile-header__edit-avatar" id="editAvatarBtn" aria-label="Changer l'avatar">
-              📷
+            <button class="profile-header__edit-avatar" id="editAvatarBtn" aria-label="Changer la photo de profil">
+              <span class="edit-avatar-icon">📷</span>
+              <span class="edit-avatar-text">Changer</span>
             </button>
+            <div class="profile-header__upload-overlay" id="uploadOverlay" style="display: none;">
+              <div class="upload-spinner"></div>
+              <span>Upload...</span>
+            </div>
           ` : ''}
         </div>
         
@@ -345,15 +350,54 @@ export class ProfilePage {
     editAvatarBtn?.addEventListener('click', () => {
       const input = document.createElement('input');
       input.type = 'file';
-      input.accept = 'image/*';
+      input.accept = 'image/png, image/jpeg, image/gif, image/webp';
       input.onchange = async (e) => {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (file) {
-          await profileService.uploadAvatar(file);
-          this.loadProfile();
+          // Afficher l'overlay de chargement
+          const overlay = this.container.querySelector('#uploadOverlay') as HTMLElement;
+          const avatarBtn = this.container.querySelector('#editAvatarBtn') as HTMLElement;
+          if (overlay) overlay.style.display = 'flex';
+          if (avatarBtn) avatarBtn.style.display = 'none';
+          
+          const result = await profileService.uploadAvatar(file);
+          
+          if (result.success) {
+            // Mettre à jour le contexte auth pour que la navbar se mette à jour
+            await authContext.refreshUser();
+            this.showToast('Photo de profil mise à jour ! 📸', 'success');
+            await this.loadProfile();
+          } else {
+            this.showToast(result.error || 'Erreur lors de l\'upload', 'error');
+            if (overlay) overlay.style.display = 'none';
+            if (avatarBtn) avatarBtn.style.display = 'flex';
+          }
         }
       };
       input.click();
     });
+  }
+
+  private showToast(message: string, type: 'success' | 'error'): void {
+    // Supprimer le toast existant s'il y en a un
+    const existingToast = document.querySelector('.profile-toast');
+    existingToast?.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `profile-toast profile-toast--${type}`;
+    toast.innerHTML = `
+      <span class="toast-icon">${type === 'success' ? '✅' : '❌'}</span>
+      <span class="toast-message">${message}</span>
+    `;
+    document.body.appendChild(toast);
+
+    // Animation d'entrée
+    setTimeout(() => toast.classList.add('profile-toast--visible'), 10);
+
+    // Supprimer après 3 secondes
+    setTimeout(() => {
+      toast.classList.remove('profile-toast--visible');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   }
 }
