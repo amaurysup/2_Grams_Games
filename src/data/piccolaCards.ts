@@ -173,7 +173,7 @@ export const PICCOLA_CARDS: PiccolaCard[] = [
   {
     id: 32,
     type: 'action',
-    text: '{player1}, fais un lap dance de 30 secondes à {player2}. Refuse = 5 gorgées'
+    text: '{player1}, fais un lap dance de 15 secondes à {player2}. Refuse = 5 gorgées'
   },
   {
     id: 33,

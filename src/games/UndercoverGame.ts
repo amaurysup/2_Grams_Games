@@ -226,6 +226,9 @@ export class UndercoverGame {
     this.gameState.phase = 'reveal';
     const currentPlayer = this.gameState.players[this.gameState.currentPlayerIndex];
     const isLastPlayer = this.gameState.currentPlayerIndex === this.gameState.players.length - 1;
+    
+    // Vérifier que le joueur a un nom
+    const playerName = currentPlayer.name || `Joueur ${this.gameState.currentPlayerIndex + 1}`;
 
     this.modal.innerHTML = `
       <div class="game-modal-content undercover-reveal">
@@ -238,9 +241,9 @@ export class UndercoverGame {
 
         <div class="reveal-content">
           <div class="current-player-info">
-            <h3>Tour de <span class="player-name-highlight">${currentPlayer.name}</span></h3>
+            <h3>Tour de <span class="player-name-highlight">${playerName}</span></h3>
             <p class="reveal-instruction">
-              👀 ${currentPlayer.name}, prépare-toi à voir ta carte...<br>
+              👀 ${playerName}, prépare-toi à voir ta carte...<br>
               Les autres, ne regardez pas !
             </p>
           </div>
@@ -251,12 +254,6 @@ export class UndercoverGame {
               Révéler ma carte
             </button>
           </div>
-
-          <div class="reveal-actions" id="reveal-actions" style="display: none;">
-            <button class="btn-secondary btn-next-player" id="btn-next-player">
-              ${isLastPlayer ? 'Commencer la partie 🎮' : 'Joueur suivant →'}
-            </button>
-          </div>
         </div>
       </div>
     `;
@@ -265,22 +262,20 @@ export class UndercoverGame {
     closeBtn?.addEventListener('click', () => this.close());
 
     const revealBtn = this.modal.querySelector('#btn-reveal');
-    revealBtn?.addEventListener('click', () => this.revealCard());
-
-    const nextBtn = this.modal.querySelector('#btn-next-player');
-    nextBtn?.addEventListener('click', () => this.handleNextPlayer());
+    revealBtn?.addEventListener('click', () => this.revealCard(isLastPlayer));
   }
 
-  private revealCard() {
+  private revealCard(isLastPlayer: boolean) {
     const currentPlayer = this.gameState.players[this.gameState.currentPlayerIndex];
     currentPlayer.hasRevealed = true;
 
     const cardContainer = this.modal.querySelector('#card-container');
-    const revealActions = this.modal.querySelector('#reveal-actions');
 
     if (cardContainer) {
+      let cardHTML = '';
+      
       if (currentPlayer.role === 'spy') {
-        cardContainer.innerHTML = `
+        cardHTML = `
           <div class="card card-spy">
             <div class="card-content">
               <div class="card-icon">🕵️</div>
@@ -290,7 +285,7 @@ export class UndercoverGame {
           </div>
         `;
       } else {
-        cardContainer.innerHTML = `
+        cardHTML = `
           <div class="card card-word">
             <div class="card-content">
               <div class="card-icon">💬</div>
@@ -301,10 +296,17 @@ export class UndercoverGame {
           </div>
         `;
       }
-    }
-
-    if (revealActions) {
-      (revealActions as HTMLElement).style.display = 'block';
+      
+      cardHTML += `
+        <button class="btn-secondary btn-next-player" id="btn-next-player">
+          ${isLastPlayer ? 'Commencer la partie 🎮' : 'Joueur suivant →'}
+        </button>
+      `;
+      
+      cardContainer.innerHTML = cardHTML;
+      
+      const nextBtn = cardContainer.querySelector('#btn-next-player');
+      nextBtn?.addEventListener('click', () => this.handleNextPlayer());
     }
   }
 
