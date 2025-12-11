@@ -240,7 +240,14 @@ class ProfileService {
 
   // Uploader un avatar
   async uploadAvatar(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
-    if (!this.userId) {
+    // Récupérer l'userId depuis la session Supabase si pas défini
+    let userId = this.userId;
+    if (!userId) {
+      const { data: { session } } = await supabase.auth.getSession();
+      userId = session?.user?.id || null;
+    }
+    
+    if (!userId) {
       return { success: false, error: 'Non connecté' };
     }
 
@@ -255,7 +262,7 @@ class ProfileService {
 
     try {
       const ext = file.name.split('.').pop();
-      const fileName = `${this.userId}/avatar.${ext}`;
+      const fileName = `${userId}/avatar.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
@@ -267,8 +274,16 @@ class ProfileService {
         .from('avatars')
         .getPublicUrl(fileName);
 
-      // Mettre à jour le profil
-      await this.updateProfile({ avatar_url: publicUrl });
+      // Mettre à jour le profil - utiliser userId local
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          avatar_url: publicUrl,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', userId);
+
+      if (updateError) throw updateError;
 
       return { success: true, url: publicUrl };
     } catch (error) {
