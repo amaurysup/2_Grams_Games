@@ -354,13 +354,22 @@ export class ProfilePage {
       input.onchange = async (e) => {
         const file = (e.target as HTMLInputElement).files?.[0];
         if (file) {
+          console.log('📸 ProfilePage - userId:', this.userId);
+          console.log('📸 ProfilePage - file:', file.name, file.size);
+          
+          if (!this.userId) {
+            this.showToast('Vous devez être connecté pour changer votre photo', 'error');
+            return;
+          }
+          
           // Afficher l'overlay de chargement
           const overlay = this.container.querySelector('#uploadOverlay') as HTMLElement;
           const avatarBtn = this.container.querySelector('#editAvatarBtn') as HTMLElement;
           if (overlay) overlay.style.display = 'flex';
           if (avatarBtn) avatarBtn.style.display = 'none';
           
-          const result = await profileService.uploadAvatar(file);
+          const result = await profileService.uploadAvatar(file, this.userId);
+          console.log('📸 ProfilePage - result:', result);
           
           if (result.success) {
             // Mettre à jour le contexte auth pour que la navbar se mette à jour
