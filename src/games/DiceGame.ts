@@ -1,3 +1,5 @@
+import { getPartyData } from '../pages/PartyModePage';
+
 interface Player {
   name: string;
   totalDrinks: number;
@@ -125,12 +127,16 @@ export class DiceGame {
   }
 
   private renderPlayerSetup(): string {
+    // Vérifier si on vient du Party Mode
+    const partyData = getPartyData();
+    const defaultCount = partyData?.playerCount || 2;
+    
     return `
       <div class="player-setup">
         <h3>Configuration de la partie</h3>
         <div class="form-group">
           <label for="playerCount">Nombre de joueurs :</label>
-          <input type="number" id="playerCount" min="1" max="10" value="2" />
+          <input type="number" id="playerCount" min="1" max="10" value="${defaultCount}" />
         </div>
         <button class="btn-next" id="btnSetPlayers">Suivant</button>
       </div>
@@ -138,12 +144,17 @@ export class DiceGame {
   }
 
   private renderPlayerNames(playerCount: number): string {
+    // Vérifier si on vient du Party Mode
+    const partyData = getPartyData();
+    const defaultNames = partyData?.playerNames || [];
+    
     let inputs = '';
     for (let i = 1; i <= playerCount; i++) {
+      const defaultName = defaultNames[i - 1] || '';
       inputs += `
         <div class="form-group">
           <label for="player${i}">Joueur ${i} :</label>
-          <input type="text" id="player${i}" placeholder="Pseudo" required />
+          <input type="text" id="player${i}" placeholder="Pseudo" value="${defaultName}" required />
         </div>
       `;
     }

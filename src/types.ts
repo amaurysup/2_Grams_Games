@@ -14,6 +14,7 @@ export interface Game {
   image?: string;
   joueurs_min?: number;
   joueurs_max?: number | null;
+  party_mode?: boolean;
 }
 
 export interface Theme {

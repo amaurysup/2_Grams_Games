@@ -4,6 +4,7 @@
  */
 
 import { PiccolaCard, getShuffledDeck, getCardWithRandomPlayers } from '../data/piccolaCards';
+import { getPartyData } from '../pages/PartyModePage';
 
 interface GameState {
   players: string[];
@@ -42,6 +43,18 @@ export class PiccolaGame {
    * Écran de configuration des joueurs
    */
   private renderPlayerSetup(): void {
+    // Vérifier si on vient du Party Mode
+    const partyData = getPartyData();
+    const defaultCount = partyData?.playerCount && partyData.playerCount >= 3 ? partyData.playerCount : 4;
+    const defaultNames = partyData?.playerNames || [];
+    
+    // Générer les inputs avec les noms pré-remplis
+    let playerInputsHtml = '';
+    for (let i = 1; i <= defaultCount; i++) {
+      const defaultName = defaultNames[i - 1] || '';
+      playerInputsHtml += `<input type="text" class="player-name-input" placeholder="Joueur ${i}" data-player="${i}" value="${defaultName}" />`;
+    }
+    
     this.container.innerHTML = `
       <div class="piccola-modal-overlay">
         <div class="piccola-modal">
@@ -58,7 +71,7 @@ export class PiccolaGame {
                 id="player-count" 
                 min="3" 
                 max="10" 
-                value="4"
+                value="${defaultCount}"
                 class="setup-input"
               />
             </div>
@@ -66,10 +79,7 @@ export class PiccolaGame {
             <div class="setup-section">
               <label>Prénoms des joueurs</label>
               <div id="player-names-container">
-                <input type="text" class="player-name-input" placeholder="Joueur 1" data-player="1" />
-                <input type="text" class="player-name-input" placeholder="Joueur 2" data-player="2" />
-                <input type="text" class="player-name-input" placeholder="Joueur 3" data-player="3" />
-                <input type="text" class="player-name-input" placeholder="Joueur 4" data-player="4" />
+                ${playerInputsHtml}
               </div>
             </div>
 
@@ -123,6 +133,10 @@ export class PiccolaGame {
     const container = document.getElementById('player-names-container');
     if (!container) return;
 
+    // Récupérer les noms du Party Mode pour pré-remplir
+    const partyData = getPartyData();
+    const defaultNames = partyData?.playerNames || [];
+
     container.innerHTML = '';
     for (let i = 1; i <= count; i++) {
       const input = document.createElement('input');
@@ -130,6 +144,10 @@ export class PiccolaGame {
       input.className = 'player-name-input';
       input.placeholder = `Joueur ${i}`;
       input.dataset.player = i.toString();
+      // Pré-remplir avec le nom du Party Mode si disponible
+      if (defaultNames[i - 1]) {
+        input.value = defaultNames[i - 1];
+      }
       container.appendChild(input);
     }
   }

@@ -1,4 +1,5 @@
 import { getRandomWord } from '../data/undercoverWords';
+import { getPartyData } from '../pages/PartyModePage';
 
 interface Player {
   name: string;
@@ -58,6 +59,11 @@ export class UndercoverGame {
    */
   private renderPlayerSetup() {
     this.gameState.phase = 'setup';
+    
+    // Vérifier si on vient du Party Mode
+    const partyData = getPartyData();
+    const defaultCount = partyData?.playerCount && partyData.playerCount >= 4 ? partyData.playerCount : 4;
+    
     this.modal.innerHTML = `
       <div class="game-modal-content undercover-setup">
         <button class="modal-close" aria-label="Fermer">✕</button>
@@ -76,7 +82,7 @@ export class UndercoverGame {
 
           <div class="player-count-selector">
             <button class="btn-count-change" id="btn-decrease">-</button>
-            <div class="player-count-display" id="player-count-display">4</div>
+            <div class="player-count-display" id="player-count-display">${defaultCount}</div>
             <button class="btn-count-change" id="btn-increase">+</button>
           </div>
 
@@ -87,14 +93,14 @@ export class UndercoverGame {
       </div>
     `;
 
-    this.attachSetupListeners();
+    this.attachSetupListeners(defaultCount);
   }
 
-  private attachSetupListeners() {
+  private attachSetupListeners(initialCount: number = 4) {
     const closeBtn = this.modal.querySelector('.modal-close');
     closeBtn?.addEventListener('click', () => this.close());
 
-    let playerCount = 4;
+    let playerCount = initialCount;
     const display = this.modal.querySelector('#player-count-display');
     
     const decreaseBtn = this.modal.querySelector('#btn-decrease');
@@ -160,18 +166,27 @@ export class UndercoverGame {
    */
   private renderPlayerNames() {
     this.gameState.phase = 'names';
-    const playerInputs = this.gameState.players.map((_, index) => `
-      <div class="form-group">
-        <label for="player-name-${index}">Joueur ${index + 1}</label>
-        <input 
-          type="text" 
-          id="player-name-${index}" 
-          class="player-name-input"
-          placeholder="Pseudo du joueur ${index + 1}"
-          required
-        />
-      </div>
-    `).join('');
+    
+    // Vérifier si on vient du Party Mode pour pré-remplir les noms
+    const partyData = getPartyData();
+    const defaultNames = partyData?.playerNames || [];
+    
+    const playerInputs = this.gameState.players.map((_, index) => {
+      const defaultName = defaultNames[index] || '';
+      return `
+        <div class="form-group">
+          <label for="player-name-${index}">Joueur ${index + 1}</label>
+          <input 
+            type="text" 
+            id="player-name-${index}" 
+            class="player-name-input"
+            placeholder="Pseudo du joueur ${index + 1}"
+            value="${defaultName}"
+            required
+          />
+        </div>
+      `;
+    }).join('');
 
     this.modal.innerHTML = `
       <div class="game-modal-content undercover-names">

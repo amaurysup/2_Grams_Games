@@ -185,19 +185,22 @@ export class HomePage {
 
   private addTinderButton(): void {
     // Vérifier si le bouton existe déjà
-    if (document.getElementById('tinder-fab')) return;
+    if (document.getElementById('party-fab')) return;
     
     const fab = document.createElement('button');
-    fab.id = 'tinder-fab';
-    fab.className = 'tinder-fab';
-    fab.setAttribute('aria-label', 'Mode Tinder - Trouver un jeu');
+    fab.id = 'party-fab';
+    fab.className = 'party-fab';
+    fab.setAttribute('aria-label', 'Party Mode - Enchaîner les jeux');
     fab.innerHTML = `
-      <span class="fab-icon">🔥</span>
-      <span class="fab-label">Tinder</span>
+      <span class="party-fab-icon">🎉</span>
+      <span class="party-fab-text">
+        <span class="party-fab-title">PARTY MODE</span>
+        <span class="party-fab-subtitle">Enchaînez les jeux !</span>
+      </span>
     `;
     
     fab.addEventListener('click', () => {
-      window.location.hash = '/tinder';
+      window.location.hash = '/party';
     });
     
     document.body.appendChild(fab);

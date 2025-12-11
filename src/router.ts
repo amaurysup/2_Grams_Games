@@ -3,7 +3,7 @@ import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { GameDetailPage } from './pages/GameDetailPage';
-import { TinderModePage } from './pages/TinderModePage';
+import { PartyModePage } from './pages/PartyModePage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
 // Parsed hash result interface
@@ -187,9 +187,9 @@ export class Router {
         new HomePage(this.appContainer);
         break;
       
-      case 'tinder':
-        console.log('✅ Router - Chargement de TinderModePage');
-        new TinderModePage(this.appContainer);
+      case 'party':
+        console.log('✅ Router - Chargement de PartyModePage');
+        new PartyModePage(this.appContainer);
         break;
       
       case 'login':

@@ -3,6 +3,8 @@
  * Roulette réaliste avec système de paris et statistiques
  */
 
+import { getPartyData } from '../pages/PartyModePage';
+
 interface PlayerStats {
   name: string;
   gorgees: number;
@@ -59,6 +61,16 @@ export class RouletteGame {
    * Écran de configuration des joueurs
    */
   private renderPlayerSetup(): void {
+    // Vérifier si on vient du Party Mode
+    const partyData = getPartyData();
+    const defaultCount = partyData?.playerCount || 3;
+    const defaultNames = partyData?.playerNames || [];
+    
+    // Générer les inputs pré-remplis
+    const playerInputsHTML = Array.from({ length: defaultCount }, (_, i) => `
+      <input type="text" class="player-name-input" placeholder="Joueur ${i + 1}" data-player="${i + 1}" value="${defaultNames[i] || ''}" />
+    `).join('');
+
     this.container.innerHTML = `
       <div class="roulette-modal-overlay">
         <div class="roulette-modal">
@@ -75,7 +87,7 @@ export class RouletteGame {
                 id="player-count" 
                 min="2" 
                 max="8" 
-                value="3"
+                value="${defaultCount}"
                 class="setup-input"
               />
             </div>
@@ -83,9 +95,7 @@ export class RouletteGame {
             <div class="setup-section">
               <label>Prénoms des joueurs</label>
               <div id="player-names-container">
-                <input type="text" class="player-name-input" placeholder="Joueur 1" data-player="1" />
-                <input type="text" class="player-name-input" placeholder="Joueur 2" data-player="2" />
-                <input type="text" class="player-name-input" placeholder="Joueur 3" data-player="3" />
+                ${playerInputsHTML}
               </div>
             </div>
 
