@@ -1,5 +1,6 @@
 import { Game } from '../types';
 import { GameRecommendationService, GameRecommendation } from '../services/GameRecommendationService';
+import { THEME_DEFINITIONS } from '../themes/themeDefinitions';
 
 export class GameChatbot {
   private container: HTMLElement;
@@ -247,13 +248,17 @@ export class GameChatbot {
 
   private getGameThemes(game: Game): string[] {
     const themes: string[] = [];
-    if (game.chill) themes.push('😌 Chill');
-    if (game.découverte) themes.push('🎯 Découverte');
-    if (game.réflexion) themes.push('🧠 Réflexion');
-    if (game.destruction) themes.push('💥 Chaos');
-    if (game.embrouilles) themes.push('😈 Embrouilles');
+
+    // Use centralized theme definitions
+    THEME_DEFINITIONS.forEach(def => {
+      if (game[def.dbField] === true) {
+        themes.push(`${def.emoji} ${def.label}`);
+      }
+    });
+
+    // Keep interactif as it's not in the main theme definitions
     if (game.interactif) themes.push('🎮 Interactif');
-    if (game.exploration) themes.push('🗺️ Exploration');
+
     return themes;
   }
 

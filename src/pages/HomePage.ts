@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import type { Theme, Game } from '../types';
 import { GameChatbot } from '../components/GameChatbot';
+import { buildThemesFromGames } from '../themes/themeDefinitions';
 
 export class HomePage {
   private container: HTMLElement;
@@ -52,34 +53,8 @@ export class HomePage {
       console.log('✅ Tous les jeux récupérés:', allGamesFromDB.length);
       console.log('📝 Détail des jeux:', allGamesFromDB);
 
-      // Créer des "thèmes virtuels" basés sur les booléens
-      const themeDefinitions = [
-        { id: 'chill', name: 'Chill', emoji: '😌', field: 'chill' as keyof Game },
-        { id: 'destruction', name: 'Destruction', emoji: '💥', field: 'destruction' as keyof Game },
-        { id: 'decouverte', name: 'Découverte', emoji: '🔍', field: 'découverte' as keyof Game },
-        { id: 'embrouilles', name: 'Embrouilles', emoji: '🤯', field: 'embrouilles' as keyof Game },
-        { id: 'reflexion', name: 'Réflexion', emoji: '🧠', field: 'réflexion' as keyof Game },
-        { id: 'exploration', name: 'Exploration', emoji: '🗺️', field: 'exploration' as keyof Game }
-      ];
-
-      // Pour chaque thème virtuel, filtrer les jeux qui ont le booléen correspondant à true
-      const themesWithGames: Theme[] = themeDefinitions.map((themeDef) => {
-        const themeGames = allGamesFromDB.filter(game => game[themeDef.field] === true);
-        
-        console.log(`✅ Jeux pour ${themeDef.name}:`, themeGames.length);
-
-        return {
-          id: themeDef.id,
-          name: themeDef.name,
-          emoji: themeDef.emoji,
-          description: '',
-          created_at: new Date().toISOString(),
-          games: themeGames
-        };
-      });
-
-      // Filtrer les thèmes qui ont au moins 1 jeu
-      this.state.themes = themesWithGames.filter(t => (t.games?.length ?? 0) > 0);
+      // Créer des thèmes à partir des définitions centralisées
+      this.state.themes = buildThemesFromGames(allGamesFromDB);
       this.focusedThemeId = this.state.themes[0]?.id ?? null;
       this.state.error = false;
       this.state.allGames = allGamesFromDB;
