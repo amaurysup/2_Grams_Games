@@ -3,7 +3,7 @@
  * This replaces the spaghetti if/else logic in GameDetailPage
  */
 
-export type GameType = 'transport' | 'undercover' | 'piccola' | 'roulette';
+export type GameType = 'transport' | 'undercover' | 'piccola' | 'roulette' | 'never_ever';
 
 export interface GameLoaderConfig {
   keywords: string[];  // Keywords to match in game name
@@ -63,6 +63,23 @@ export const GAME_REGISTRY: Record<GameType, GameLoaderConfig> = {
       document.body.appendChild(modalContainer);
       
       const game = new module.RouletteGame(modalContainer);
+      game.start(userId);
+    }
+  },
+  
+  never_ever: {
+    keywords: ['jamais', 'never have i ever', 'je n\'ai jamais', 'never_ever'],
+    loader: () => import('./NeverHaveIEverGame'),
+    setup: (module, _gameName, userId) => {
+      // Remove existing container if present
+      const existing = document.getElementById('never-have-i-ever-container');
+      if (existing) existing.remove();
+      
+      const modalContainer = document.createElement('div');
+      modalContainer.id = 'never-have-i-ever-container';
+      document.body.appendChild(modalContainer);
+      
+      const game = new module.NeverHaveIEverGame(modalContainer);
       game.start(userId);
     }
   }
