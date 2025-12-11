@@ -179,16 +179,19 @@ export class Router {
       case '':
       case 'home':
         console.log('✅ Router - Chargement de LandingPage');
+        this.showPartyFab(); // Réafficher le bouton party mode
         new LandingPage(this.appContainer);
         break;
       
       case 'games':
         console.log('✅ Router - Chargement de HomePage (jeux)', { query });
+        this.showPartyFab(); // Réafficher le bouton party mode
         new HomePage(this.appContainer);
         break;
       
       case 'party':
         console.log('✅ Router - Chargement de PartyModePage');
+        this.hidePartyFab(); // Cacher le bouton party mode
         new PartyModePage(this.appContainer);
         break;
       
@@ -228,6 +231,26 @@ export class Router {
    */
   navigate(path: string): void {
     window.location.hash = path;
+  }
+
+  /**
+   * Hide the party mode FAB button
+   */
+  private hidePartyFab(): void {
+    const partyFab = document.getElementById('party-fab');
+    if (partyFab) {
+      partyFab.style.display = 'none';
+    }
+  }
+
+  /**
+   * Show the party mode FAB button
+   */
+  private showPartyFab(): void {
+    const partyFab = document.getElementById('party-fab');
+    if (partyFab) {
+      partyFab.style.display = '';
+    }
   }
 
   /**
