@@ -135,6 +135,28 @@ h1, h2, h3, h4, h5, h6 {
     color: var(--yellow);
 }
 
+/* Party Mode button in navbar */
+.nav-link--party {
+    background: linear-gradient(135deg, var(--pink) 0%, #ff6b9d 50%, var(--yellow) 100%);
+    color: white !important;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: bold;
+    animation: partyPulse 2s ease-in-out infinite;
+    box-shadow: 0 2px 8px rgba(255, 64, 129, 0.4);
+}
+
+.nav-link--party:hover {
+    color: white !important;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 64, 129, 0.6);
+}
+
+@keyframes partyPulse {
+    0%, 100% { box-shadow: 0 2px 8px rgba(255, 64, 129, 0.4); }
+    50% { box-shadow: 0 4px 16px rgba(255, 64, 129, 0.7); }
+}
+
 .btn-login {
     background: var(--pink);
     color: white;

@@ -187,7 +187,6 @@ export class HomePage {
     
     document.body.appendChild(this.chatbot.render());
     this.addChatbotButton();
-    this.addTinderButton();
   }
 
   private addChatbotButton(): void {
@@ -204,30 +203,6 @@ export class HomePage {
     
     fab.addEventListener('click', () => {
       this.chatbot?.toggle();
-    });
-    
-    document.body.appendChild(fab);
-  }
-
-  private addTinderButton(): void {
-    // Vérifier si le bouton existe déjà
-    if (document.getElementById('party-fab')) return;
-    if (document.getElementById('tinder-fab')) return;
-    
-    const fab = document.createElement('button');
-    fab.id = 'party-fab';
-    fab.className = 'party-fab';
-    fab.setAttribute('aria-label', 'Party Mode - Enchaîner les jeux');
-    fab.innerHTML = `
-      <span class="party-fab-icon">🎉</span>
-      <span class="party-fab-text">
-        <span class="party-fab-title">PARTY MODE</span>
-        <span class="party-fab-subtitle">Enchaînez les jeux !</span>
-      </span>
-    `;
-    
-    fab.addEventListener('click', () => {
-      window.location.hash = '/party';
     });
     
     document.body.appendChild(fab);

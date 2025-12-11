@@ -56,6 +56,7 @@ export class Navbar {
             <h1 class="logo">2 GRAMS GAMES</h1>
           </a>
           <div class="nav-links">
+            <a href="#" data-route="/party" class="nav-link nav-link--party">🎉 Party Mode</a>
             <a href="#" data-route="/" class="nav-link">Accueil</a>
             <a href="#" data-route="/games" class="nav-link">🎮 Jeux</a>
             ${isAuthenticated && user ? `
