@@ -5,13 +5,15 @@ interface Player {
   name: string;
   role: 'word' | 'spy';
   hasRevealed: boolean;
+  isEliminated: boolean;
 }
 
 interface GameState {
   secretWord: string;
   players: Player[];
   currentPlayerIndex: number;
-  phase: 'setup' | 'names' | 'reveal' | 'playing' | 'finished';
+  phase: 'setup' | 'names' | 'reveal' | 'playing' | 'elimination' | 'finished';
+  currentRound: number;
 }
 
 export class UndercoverGame {
@@ -40,7 +42,8 @@ export class UndercoverGame {
       secretWord: '',
       players: [],
       currentPlayerIndex: 0,
-      phase: 'setup'
+      phase: 'setup',
+      currentRound: 1
     };
   }
 
@@ -156,9 +159,13 @@ export class UndercoverGame {
       this.gameState.players.push({
         name: '',
         role: roles[i],
-        hasRevealed: false
+        hasRevealed: false,
+        isEliminated: false
       });
     }
+    
+    // Réinitialiser le compteur de tours
+    this.gameState.currentRound = 1;
   }
 
   /**
@@ -351,10 +358,13 @@ export class UndercoverGame {
   }
 
   /**
-   * Phase 4: Partie en cours
+   * Phase 4: Partie en cours - Écran de jeu avec élimination
    */
   private renderPlayingPhase() {
     this.gameState.phase = 'playing';
+    
+    // Compter les joueurs encore en jeu
+    const alivePlayers = this.gameState.players.filter(p => !p.isEliminated);
 
     this.modal.innerHTML = `
       <div class="game-modal-content undercover-playing">
@@ -362,39 +372,56 @@ export class UndercoverGame {
         
         <div class="undercover-header">
           <h2>🕵️ ${this.gameName}</h2>
-          <p class="undercover-subtitle">La partie est lancée !</p>
+          <p class="undercover-subtitle">Tour ${this.gameState.currentRound}</p>
         </div>
 
         <div class="playing-content">
+          <div class="round-info">
+            <div class="round-badge">🔄 Tour ${this.gameState.currentRound}</div>
+            <p class="players-remaining">
+              <span class="alive-count">${alivePlayers.length}</span> joueurs encore en jeu
+            </p>
+          </div>
+
           <div class="instructions-box">
-            <h3>🎯 Comment jouer ?</h3>
+            <h3>🎯 Ce tour</h3>
             <ol class="game-rules">
-              <li>Chacun votre tour, donnez un indice lié à votre mot (ou bluffez si vous êtes espion)</li>
-              <li>Discutez et essayez de deviner qui sont les espions</li>
+              <li>Chacun votre tour, donnez un indice lié à votre mot</li>
+              <li>Discutez et débattez entre vous</li>
               <li>Votez pour éliminer un joueur suspect</li>
-              <li>Les civils gagnent s'ils trouvent tous les espions</li>
-              <li>Les espions gagnent s'ils devinent le mot secret ou survivent</li>
             </ol>
           </div>
 
           <div class="players-list-box">
-            <h3>👥 Liste des joueurs</h3>
+            <h3>👥 Joueurs en jeu</h3>
             <ul class="players-list">
-              ${this.gameState.players.map(p => `
+              ${alivePlayers.map(p => `
                 <li class="player-item">
                   <span class="player-icon">🎭</span>
                   <span class="player-display-name">${p.name}</span>
                 </li>
               `).join('')}
             </ul>
+            ${this.gameState.players.filter(p => p.isEliminated).length > 0 ? `
+              <h4 class="eliminated-title">💀 Éliminés</h4>
+              <ul class="players-list eliminated-list">
+                ${this.gameState.players.filter(p => p.isEliminated).map(p => `
+                  <li class="player-item eliminated">
+                    <span class="player-icon">💀</span>
+                    <span class="player-display-name">${p.name}</span>
+                    <span class="role-reveal ${p.role === 'spy' ? 'spy-role' : 'civil-role'}">${p.role === 'spy' ? '🕵️ Spy' : '👤 Civil'}</span>
+                  </li>
+                `).join('')}
+              </ul>
+            ` : ''}
           </div>
 
           <div class="game-actions">
-            <button class="btn-primary btn-new-game" id="btn-new-game">
-              🔄 Nouvelle partie
+            <button class="btn-primary btn-eliminate" id="btn-start-elimination">
+              ⚔️ Passer au vote d'élimination
             </button>
-            <button class="btn-secondary btn-quit" id="btn-quit-game">
-              🚪 Quitter
+            <button class="btn-secondary btn-spy-wins" id="btn-spy-wins">
+              🕵️ Un spy a deviné le mot !
             </button>
           </div>
         </div>
@@ -404,14 +431,275 @@ export class UndercoverGame {
     const closeBtn = this.modal.querySelector('.modal-close');
     closeBtn?.addEventListener('click', () => this.close());
 
-    const newGameBtn = this.modal.querySelector('#btn-new-game');
-    newGameBtn?.addEventListener('click', () => {
-      if (confirm('Commencer une nouvelle partie ?')) {
-        this.renderPlayerSetup();
-      }
-    });
+    const eliminateBtn = this.modal.querySelector('#btn-start-elimination');
+    eliminateBtn?.addEventListener('click', () => this.renderEliminationPhase());
 
-    const quitBtn = this.modal.querySelector('#btn-quit-game');
+    const spyWinsBtn = this.modal.querySelector('#btn-spy-wins');
+    spyWinsBtn?.addEventListener('click', () => this.renderSpyVictory());
+  }
+
+  /**
+   * Phase 5: Sélection du joueur à éliminer
+   */
+  private renderEliminationPhase() {
+    this.gameState.phase = 'elimination';
+    
+    const alivePlayers = this.gameState.players.filter(p => !p.isEliminated);
+
+    this.modal.innerHTML = `
+      <div class="game-modal-content undercover-elimination">
+        <button class="modal-close" aria-label="Fermer">✕</button>
+        
+        <div class="undercover-header">
+          <h2>🕵️ ${this.gameName}</h2>
+          <p class="undercover-subtitle">⚔️ Vote d'élimination - Tour ${this.gameState.currentRound}</p>
+        </div>
+
+        <div class="elimination-content">
+          <div class="elimination-instruction">
+            <span class="elimination-icon">🗳️</span>
+            <h3>Qui a été éliminé ?</h3>
+            <p>Sélectionnez le joueur que le groupe a décidé d'éliminer</p>
+          </div>
+
+          <div class="elimination-players">
+            ${alivePlayers.map((p) => {
+              const originalIndex = this.gameState.players.findIndex(pl => pl.name === p.name);
+              return `
+                <button class="btn-eliminate-player" data-player-index="${originalIndex}">
+                  <span class="player-icon">🎭</span>
+                  <span class="player-name">${p.name}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          <button class="btn-secondary btn-cancel-elimination" id="btn-cancel">
+            ← Retour au jeu
+          </button>
+        </div>
+      </div>
+    `;
+
+    const closeBtn = this.modal.querySelector('.modal-close');
+    closeBtn?.addEventListener('click', () => this.close());
+
+    const cancelBtn = this.modal.querySelector('#btn-cancel');
+    cancelBtn?.addEventListener('click', () => this.renderPlayingPhase());
+
+    const playerButtons = this.modal.querySelectorAll('.btn-eliminate-player');
+    playerButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        const playerIndex = parseInt(target.dataset.playerIndex || '0');
+        this.eliminatePlayer(playerIndex);
+      });
+    });
+  }
+
+  /**
+   * Élimine un joueur et vérifie la condition de victoire
+   */
+  private eliminatePlayer(playerIndex: number) {
+    const player = this.gameState.players[playerIndex];
+    player.isEliminated = true;
+
+    // Vérifier les conditions de victoire
+    const aliveSpies = this.gameState.players.filter(p => !p.isEliminated && p.role === 'spy');
+    const aliveCivils = this.gameState.players.filter(p => !p.isEliminated && p.role === 'word');
+
+    if (aliveSpies.length === 0) {
+      // Tous les spies sont éliminés - Les civils gagnent !
+      this.renderCivilVictory();
+    } else if (aliveSpies.length >= aliveCivils.length) {
+      // Les spies sont en majorité ou égalité - Les spies gagnent !
+      this.renderSpyVictory();
+    } else {
+      // La partie continue
+      this.renderEliminationResult(player);
+    }
+  }
+
+  /**
+   * Affiche le résultat de l'élimination
+   */
+  private renderEliminationResult(eliminatedPlayer: Player) {
+    const isSpy = eliminatedPlayer.role === 'spy';
+    
+    this.modal.innerHTML = `
+      <div class="game-modal-content undercover-result">
+        <button class="modal-close" aria-label="Fermer">✕</button>
+        
+        <div class="undercover-header">
+          <h2>🕵️ ${this.gameName}</h2>
+          <p class="undercover-subtitle">Résultat du vote</p>
+        </div>
+
+        <div class="result-content">
+          <div class="eliminated-reveal ${isSpy ? 'spy-eliminated' : 'civil-eliminated'}">
+            <div class="eliminated-icon">${isSpy ? '🕵️' : '👤'}</div>
+            <h3 class="eliminated-name">${eliminatedPlayer.name}</h3>
+            <p class="eliminated-role">était ${isSpy ? 'un SPY !' : 'un CIVIL...'}</p>
+          </div>
+
+          ${isSpy ? `
+            <div class="result-message good-news">
+              <span>✅</span> Bien joué ! Vous avez éliminé un espion !
+            </div>
+          ` : `
+            <div class="result-message bad-news">
+              <span>❌</span> Dommage... C'était un civil innocent.
+            </div>
+          `}
+
+          <div class="remaining-info">
+            <p>🎭 Joueurs restants : ${this.gameState.players.filter(p => !p.isEliminated).length}</p>
+            <p>🕵️ Espions restants : ???</p>
+          </div>
+
+          <button class="btn-primary btn-next-round" id="btn-next-round">
+            ➡️ Tour suivant
+          </button>
+        </div>
+      </div>
+    `;
+
+    const closeBtn = this.modal.querySelector('.modal-close');
+    closeBtn?.addEventListener('click', () => this.close());
+
+    const nextRoundBtn = this.modal.querySelector('#btn-next-round');
+    nextRoundBtn?.addEventListener('click', () => {
+      this.gameState.currentRound++;
+      this.renderPlayingPhase();
+    });
+  }
+
+  /**
+   * Écran de victoire des civils
+   */
+  private renderCivilVictory() {
+    this.gameState.phase = 'finished';
+    
+    const spies = this.gameState.players.filter(p => p.role === 'spy');
+
+    this.modal.innerHTML = `
+      <div class="game-modal-content undercover-victory civil-victory">
+        <button class="modal-close" aria-label="Fermer">✕</button>
+        
+        <div class="victory-content">
+          <div class="victory-icon">🎉</div>
+          <h2 class="victory-title">Victoire des Civils !</h2>
+          <p class="victory-subtitle">Tous les espions ont été démasqués !</p>
+
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-icon">🔄</span>
+              <span class="stat-value">${this.gameState.currentRound}</span>
+              <span class="stat-label">Tours joués</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">🕵️</span>
+              <span class="stat-value">${spies.length}</span>
+              <span class="stat-label">Espions éliminés</span>
+            </div>
+          </div>
+
+          <div class="spies-reveal">
+            <h4>Les espions étaient :</h4>
+            <ul class="spy-list">
+              ${spies.map(s => `<li>🕵️ ${s.name}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div class="secret-word-reveal">
+            <p>Le mot secret était :</p>
+            <div class="word-reveal">${this.gameState.secretWord}</div>
+          </div>
+
+          <div class="game-actions">
+            <button class="btn-primary btn-new-game" id="btn-new-game">
+              🔄 Nouvelle partie
+            </button>
+            <button class="btn-secondary btn-quit" id="btn-quit">
+              🚪 Quitter
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.attachVictoryListeners();
+  }
+
+  /**
+   * Écran de victoire des espions
+   */
+  private renderSpyVictory() {
+    this.gameState.phase = 'finished';
+    
+    const spies = this.gameState.players.filter(p => p.role === 'spy');
+    const aliveSpies = spies.filter(p => !p.isEliminated);
+
+    this.modal.innerHTML = `
+      <div class="game-modal-content undercover-victory spy-victory">
+        <button class="modal-close" aria-label="Fermer">✕</button>
+        
+        <div class="victory-content">
+          <div class="victory-icon">🕵️</div>
+          <h2 class="victory-title">Victoire des Espions !</h2>
+          <p class="victory-subtitle">${aliveSpies.length > 0 ? 'Les espions ont survécu et pris le contrôle !' : 'Un espion a deviné le mot secret !'}</p>
+
+          <div class="game-stats">
+            <div class="stat-item">
+              <span class="stat-icon">🔄</span>
+              <span class="stat-value">${this.gameState.currentRound}</span>
+              <span class="stat-label">Tours joués</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-icon">🕵️</span>
+              <span class="stat-value">${aliveSpies.length}/${spies.length}</span>
+              <span class="stat-label">Espions survivants</span>
+            </div>
+          </div>
+
+          <div class="spies-reveal">
+            <h4>Les espions étaient :</h4>
+            <ul class="spy-list">
+              ${spies.map(s => `<li>${s.isEliminated ? '💀' : '🕵️'} ${s.name}</li>`).join('')}
+            </ul>
+          </div>
+
+          <div class="secret-word-reveal">
+            <p>Le mot secret était :</p>
+            <div class="word-reveal">${this.gameState.secretWord}</div>
+          </div>
+
+          <div class="game-actions">
+            <button class="btn-primary btn-new-game" id="btn-new-game">
+              🔄 Nouvelle partie
+            </button>
+            <button class="btn-secondary btn-quit" id="btn-quit">
+              🚪 Quitter
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.attachVictoryListeners();
+  }
+
+  /**
+   * Attache les listeners pour les écrans de victoire
+   */
+  private attachVictoryListeners() {
+    const closeBtn = this.modal.querySelector('.modal-close');
+    closeBtn?.addEventListener('click', () => this.close());
+
+    const newGameBtn = this.modal.querySelector('#btn-new-game');
+    newGameBtn?.addEventListener('click', () => this.renderPlayerSetup());
+
+    const quitBtn = this.modal.querySelector('#btn-quit');
     quitBtn?.addEventListener('click', () => this.close());
   }
 
