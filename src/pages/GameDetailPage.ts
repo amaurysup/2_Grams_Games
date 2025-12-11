@@ -1,5 +1,7 @@
 import { supabase } from '../lib/supabase';
 import type { Game } from '../types';
+import { findGameType, launchGame } from '../games/GameRegistry';
+import { toast } from '../components/Toast';
 
 export class GameDetailPage {
   private container: HTMLElement;
@@ -90,43 +92,25 @@ export class GameDetailPage {
           const { data: { user } } = await supabase.auth.getUser();
           
           if (!user) {
-            const goToLogin = confirm(
-              'Vous devez être connecté pour jouer en mode interactif !\n\n' +
-              'Cliquez sur OK pour aller à la page de connexion.'
-            );
-            if (goToLogin) {
+            toast.warning('Vous devez être connecté pour jouer en mode interactif !');
+            setTimeout(() => {
               window.location.hash = '/login';
-            }
+            }, 1500);
             return;
           }
           
-          // Charger dynamiquement le jeu correspondant
-          const gameName = game.name.toLowerCase().trim();
+          // Trouver le type de jeu dans le registre
+          const gameType = findGameType(game.name);
           
-          if (gameName === 'jeu des transports' || gameName.includes('transport')) {
-            const { DiceGame } = await import('../games/DiceGame');
-            const diceGame = new DiceGame(game.name, user.id);
-            diceGame.open();
-          } else if (gameName === 'undercover' || gameName.includes('undercover')) {
-            const { UndercoverGame } = await import('../games/UndercoverGame');
-            const undercoverGame = new UndercoverGame(game.name, user.id);
-            undercoverGame.open();
-          } else if (gameName === 'piccola' || gameName.includes('piccola')) {
-            const { PiccolaGame } = await import('../games/PiccolaGame');
-            const modalContainer = document.createElement('div');
-            modalContainer.id = 'piccola-game-container';
-            document.body.appendChild(modalContainer);
-            const piccolaGame = new PiccolaGame(modalContainer);
-            piccolaGame.start(user.id);
-          } else if (gameName === 'roulette' || gameName.includes('roulette')) {
-            const { RouletteGame } = await import('../games/RouletteGame');
-            const modalContainer = document.createElement('div');
-            modalContainer.id = 'roulette-game-container';
-            document.body.appendChild(modalContainer);
-            const rouletteGame = new RouletteGame(modalContainer);
-            rouletteGame.start(user.id);
+          if (gameType) {
+            // Lancer le jeu via le registre
+            const success = await launchGame(gameType, game.name, user.id);
+            if (!success) {
+              toast.error('Erreur lors du chargement du jeu. Réessaie !');
+            }
           } else {
-            alert(`Le jeu "${game.name}" va bientôt être disponible en mode interactif ! 🎉`);
+            // Jeu interactif non encore implémenté
+            toast.info(`Le jeu "${game.name}" sera bientôt disponible en mode interactif ! 🎉`);
           }
         });
       }

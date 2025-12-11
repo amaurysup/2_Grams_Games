@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 import type { Theme, Game } from '../types';
 import { GameChatbot } from '../components/GameChatbot';
-import { buildThemesFromGames } from '../themes/themeDefinitions';
+import { buildThemesFromGames, THEME_DEFINITIONS } from '../themes/themeDefinitions';
 
 export class HomePage {
   private container: HTMLElement;
@@ -10,6 +10,8 @@ export class HomePage {
     error: boolean;
     themes: Theme[];
     allGames: Game[];
+    searchQuery: string;
+    activeFilters: Set<string>;
   };
   private focusedThemeId: string | null;
   private chatbot: GameChatbot | null;
@@ -24,6 +26,8 @@ export class HomePage {
       error: false,
       themes: [],
       allGames: [],
+      searchQuery: '',
+      activeFilters: new Set<string>(),
     };
     this.focusedThemeId = null;
     this.chatbot = null;
@@ -71,6 +75,75 @@ export class HomePage {
       this.state.loading = false;
       this.render();
     }
+  }
+
+  /**
+   * Filter games based on search query and active theme filters
+   */
+  private getFilteredGames(): Game[] {
+    let games = [...this.state.allGames];
+    
+    // Filter by search query
+    if (this.state.searchQuery.trim()) {
+      const query = this.state.searchQuery.toLowerCase().trim();
+      games = games.filter(game => 
+        game.name.toLowerCase().includes(query) ||
+        game.description.toLowerCase().includes(query)
+      );
+    }
+    
+    // Filter by active theme filters
+    if (this.state.activeFilters.size > 0) {
+      games = games.filter(game => {
+        // Game must match at least one active filter
+        for (const filterId of this.state.activeFilters) {
+          const themeDef = THEME_DEFINITIONS.find(t => t.id === filterId);
+          if (themeDef && game[themeDef.dbField] === true) {
+            return true;
+          }
+        }
+        return false;
+      });
+    }
+    
+    return games;
+  }
+
+  /**
+   * Build themes from filtered games
+   */
+  private getFilteredThemes(): Theme[] {
+    const filteredGames = this.getFilteredGames();
+    return buildThemesFromGames(filteredGames);
+  }
+
+  /**
+   * Handle search input change
+   */
+  private handleSearchChange(query: string): void {
+    this.state.searchQuery = query;
+    this.render();
+  }
+
+  /**
+   * Toggle a theme filter
+   */
+  private toggleFilter(themeId: string): void {
+    if (this.state.activeFilters.has(themeId)) {
+      this.state.activeFilters.delete(themeId);
+    } else {
+      this.state.activeFilters.add(themeId);
+    }
+    this.render();
+  }
+
+  /**
+   * Clear all filters and search
+   */
+  private clearFilters(): void {
+    this.state.searchQuery = '';
+    this.state.activeFilters.clear();
+    this.render();
   }
 
   private initChatbot(): void {
@@ -138,7 +211,7 @@ export class HomePage {
   }
 
   private buildTemplate(): string {
-    const { loading, error, themes } = this.state;
+    const { loading, error } = this.state;
 
     const header = `
       <header class="themes-header" data-testid="themes-header">
@@ -147,6 +220,37 @@ export class HomePage {
           <p class="themes-header__subtitle">Fais ton choix, scroll à droite 👇</p>
         </div>
       </header>
+    `;
+
+    // Search bar and filter chips
+    const searchAndFilters = `
+      <div class="search-filter-container">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            id="game-search" 
+            class="search-input" 
+            placeholder="Rechercher un jeu..."
+            value="${this.escapeHtml(this.state.searchQuery)}"
+            autocomplete="off"
+          />
+          ${this.state.searchQuery || this.state.activeFilters.size > 0 ? `
+            <button class="search-clear" id="clear-filters" aria-label="Effacer les filtres">✕</button>
+          ` : ''}
+        </div>
+        <div class="filter-chips">
+          ${THEME_DEFINITIONS.map(theme => `
+            <button 
+              class="filter-chip ${this.state.activeFilters.has(theme.id) ? 'filter-chip--active' : ''}"
+              data-filter-id="${theme.id}"
+              aria-pressed="${this.state.activeFilters.has(theme.id)}"
+            >
+              ${theme.emoji} ${theme.label}
+            </button>
+          `).join('')}
+        </div>
+      </div>
     `;
 
     if (loading) {
@@ -177,7 +281,30 @@ export class HomePage {
       `;
     }
 
-    if (themes.length === 0) {
+    // Get filtered themes based on search and filters
+    const filteredThemes = this.getFilteredThemes();
+    const hasFilters = this.state.searchQuery || this.state.activeFilters.size > 0;
+
+    // No games found after filtering
+    if (filteredThemes.length === 0 && hasFilters) {
+      return `
+        <div class="home-page">
+          <section class="themes-screen" data-testid="themes-screen">
+            ${header}
+            ${searchAndFilters}
+            <div class="themes-empty themes-empty--filtered" role="status">
+              <div class="themes-empty__emoji">🔍</div>
+              <h2 class="themes-empty__title">Aucun jeu trouvé</h2>
+              <p class="themes-empty__subtitle">Essaie avec d'autres filtres ou une autre recherche.</p>
+              <button class="btn btn-secondary" id="clear-all-filters">Effacer les filtres</button>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    // No games at all (empty database)
+    if (this.state.allGames.length === 0) {
       return `
         <div class="home-page">
           <section class="themes-screen" data-testid="themes-screen">
@@ -192,18 +319,25 @@ export class HomePage {
       `;
     }
 
-    const themesSections = themes.map((theme) => this.renderTheme(theme)).join('');
+    const themesSections = filteredThemes.map((theme) => this.renderTheme(theme)).join('');
 
     return `
       <div class="home-page">
         <section class="themes-screen" data-testid="themes-screen">
           ${header}
+          ${searchAndFilters}
           <div class="themes-list" data-testid="themes-list">
             ${themesSections}
           </div>
         </section>
       </div>
     `;
+  }
+
+  private escapeHtml(text: string): string {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   private renderSkeleton(): string {
@@ -280,6 +414,7 @@ export class HomePage {
   }
 
   private attachGlobalListeners(): void {
+    // Retry button
     const retryButton = this.container.querySelector<HTMLButtonElement>('[data-testid="themes-retry"]');
     if (retryButton) {
       retryButton.addEventListener('click', () => {
@@ -289,6 +424,45 @@ export class HomePage {
         void this.loadThemes();
       });
     }
+
+    // Search input
+    const searchInput = this.container.querySelector<HTMLInputElement>('#game-search');
+    if (searchInput) {
+      // Debounced search
+      let debounceTimer: number;
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        debounceTimer = window.setTimeout(() => {
+          this.handleSearchChange((e.target as HTMLInputElement).value);
+        }, 300);
+      });
+      
+      // Focus search input if it had focus before re-render
+      if (document.activeElement?.id === 'game-search') {
+        searchInput.focus();
+        // Restore cursor position
+        searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+      }
+    }
+
+    // Clear filters button (in search bar)
+    const clearBtn = this.container.querySelector<HTMLButtonElement>('#clear-filters');
+    clearBtn?.addEventListener('click', () => this.clearFilters());
+
+    // Clear all filters button (in empty state)
+    const clearAllBtn = this.container.querySelector<HTMLButtonElement>('#clear-all-filters');
+    clearAllBtn?.addEventListener('click', () => this.clearFilters());
+
+    // Filter chips
+    const filterChips = this.container.querySelectorAll<HTMLButtonElement>('.filter-chip');
+    filterChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const filterId = chip.dataset.filterId;
+        if (filterId) {
+          this.toggleFilter(filterId);
+        }
+      });
+    });
   }
 
   private attachGameCardListeners(): void {

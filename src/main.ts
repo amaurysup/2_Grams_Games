@@ -1,12 +1,16 @@
 import '../style.css';
 import { Router } from './router';
 import { Navbar } from './components/Navbar';
+import { pwaInstall } from './components/PWAInstallButton';
 
 // Initialiser la navigation
 new Navbar('navbar');
 
 // Initialiser le routeur
 new Router('app');
+
+// Initialiser le gestionnaire PWA
+console.log('📱 PWA Install available:', pwaInstall.canInstall());
 
 // Footer
 const footer = document.getElementById('footer');
