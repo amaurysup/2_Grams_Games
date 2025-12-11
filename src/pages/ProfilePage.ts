@@ -368,7 +368,7 @@ export class ProfilePage {
           if (overlay) overlay.style.display = 'flex';
           if (avatarBtn) avatarBtn.style.display = 'none';
           
-          const result = await profileService.uploadAvatar(file, this.userId);
+          const result = await profileService.uploadAvatar(file);
           console.log('📸 ProfilePage - result:', result);
           
           if (result.success) {
