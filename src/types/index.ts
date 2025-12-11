@@ -203,13 +203,27 @@ export interface LeaderboardEntry {
 
 export type FriendshipStatus = 'pending' | 'accepted' | 'blocked';
 
+// Profile from the profiles table (synced with auth.users)
+export interface Profile {
+  id: string;
+  username: string;
+  email?: string;
+  avatar_url?: string;
+  xp?: number;
+  level?: number;
+  updated_at?: string;
+}
+
 export interface Friendship {
   id: string;
-  user_id: string;
-  friend_id: string;
+  requester_id: string;
+  receiver_id: string;
   status: FriendshipStatus;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
+  // Joined data
+  requester?: Profile;
+  receiver?: Profile;
 }
 
 export interface FriendProfile {

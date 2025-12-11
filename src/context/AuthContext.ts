@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import type { User, AuthState, AuthContextType } from '../types';
+import type { User, AuthState, AuthContextType, Profile } from '../types';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
 
 class AuthContext {
@@ -41,12 +41,43 @@ class AuthContext {
     });
   }
 
+  /**
+   * Récupère le profil depuis la table profiles
+   */
+  private async fetchProfile(userId: string): Promise<Profile | null> {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, username, avatar_url, email, xp, level')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.warn('⚠️ Profil non trouvé, utilisation des métadonnées auth');
+        return null;
+      }
+
+      return data;
+    } catch (err) {
+      console.error('❌ Erreur récupération profil:', err);
+      return null;
+    }
+  }
+
   private async setUserFromSupabase(supabaseUser: SupabaseUser) {
+    // Récupérer le profil depuis la table profiles
+    const profile = await this.fetchProfile(supabaseUser.id);
+
     const user: User = {
       id: supabaseUser.id,
       email: supabaseUser.email || '',
-      username: supabaseUser.user_metadata?.username || supabaseUser.email?.split('@')[0] || 'User',
-      isPremium: false
+      // Priorité: profile.username > user_metadata.username > email prefix
+      username: profile?.username || supabaseUser.user_metadata?.username || supabaseUser.email?.split('@')[0] || 'User',
+      isPremium: false,
+      // Données du profil
+      avatar_url: profile?.avatar_url || supabaseUser.user_metadata?.avatar_url,
+      total_xp: profile?.xp || 0,
+      level: profile?.level || 1
     };
 
     this.authState = {

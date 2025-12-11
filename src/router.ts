@@ -11,6 +11,7 @@ import { PlaylistsPage } from './pages/PlaylistsPage';
 import { FriendsPage } from './pages/FriendsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { StatsPage } from './pages/StatsPage';
+import { SocialPage } from './pages/SocialPage';
 
 // Parsed hash result interface
 export interface ParsedHash {
@@ -237,6 +238,10 @@ export class Router {
       
       case 'friends':
         new FriendsPage(container).render();
+        break;
+      
+      case 'social':
+        new SocialPage(this.appContainer);
         break;
       
       case 'settings':
