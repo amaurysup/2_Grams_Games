@@ -16,7 +16,9 @@ export class LandingPage {
       <div class="landing-page">
         <section class="landing-hero-full">
           <div class="landing-hero-full__content">
-            <div class="landing-hero-full__emoji">🍻</div>
+            <div class="landing-hero-full__logo">
+              <img src="/icons/icon-192x192.png" alt="2 Grams Games" class="landing-logo-img" />
+            </div>
             
             <h1 class="landing-hero-full__title">
               2 GRAMS GAMES

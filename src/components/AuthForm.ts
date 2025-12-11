@@ -32,8 +32,8 @@ export class AuthForm {
           ` : ''}
 
           <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
+            <label for="email">${this.mode === 'login' ? 'Email ou nom d\'utilisateur' : 'Email'}</label>
+            <input type="${this.mode === 'login' ? 'text' : 'email'}" id="email" name="email" required>
             <span class="error-message" id="emailError"></span>
           </div>
 
@@ -142,10 +142,19 @@ export class AuthForm {
   private validateForm(email: string, password: string, username: string, confirmPassword: string): boolean {
     let isValid = true;
 
-    // Validation email
-    if (!email || !email.includes('@')) {
-      this.setFieldError('emailError', 'Email invalide');
-      isValid = false;
+    // Validation email/identifier
+    if (this.mode === 'login') {
+      // For login, just check it's not empty
+      if (!email || email.trim().length < 3) {
+        this.setFieldError('emailError', 'Entrez votre email ou nom d\'utilisateur');
+        isValid = false;
+      }
+    } else {
+      // For signup, validate email format
+      if (!email || !email.includes('@')) {
+        this.setFieldError('emailError', 'Email invalide');
+        isValid = false;
+      }
     }
 
     // Validation password

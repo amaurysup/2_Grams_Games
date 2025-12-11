@@ -74,6 +74,17 @@ class AuthContext {
 
   async signUp(email: string, password: string, username: string): Promise<{ success: boolean; error?: string }> {
     try {
+      // Vérifier si le username existe déjà
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', username.toLowerCase())
+        .single();
+      
+      if (existingProfile) {
+        return { success: false, error: "Ce nom d'utilisateur est déjà pris" };
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -89,6 +100,13 @@ class AuthContext {
       }
 
       if (data.user) {
+        // Créer le profil dans la table profiles
+        await supabase.from('profiles').insert({
+          id: data.user.id,
+          email: email.toLowerCase(),
+          username: username.toLowerCase()
+        });
+        
         return { success: true };
       }
 
@@ -98,8 +116,27 @@ class AuthContext {
     }
   }
 
-  async signIn(email: string, password: string): Promise<{ success: boolean; error?: string }> {
+  async signIn(identifier: string, password: string): Promise<{ success: boolean; error?: string }> {
     try {
+      let email = identifier;
+      
+      // Si ce n'est pas un email (pas de @), essayer de trouver l'email par username
+      if (!identifier.includes('@')) {
+        // Chercher dans la table profiles si elle existe, sinon utiliser l'identifiant comme email
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('email')
+          .eq('username', identifier.toLowerCase())
+          .single();
+        
+        if (profiles?.email) {
+          email = profiles.email;
+        } else {
+          // Si pas de table profiles ou pas trouvé, essayer quand même (peut-être que l'utilisateur a mis son email sans @)
+          return { success: false, error: "Nom d'utilisateur non trouvé. Essayez avec votre email." };
+        }
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password

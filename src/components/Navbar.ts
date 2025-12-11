@@ -23,12 +23,15 @@ export class Navbar {
     this.container.innerHTML = `
       <nav class="navbar">
         <div class="nav-container">
-          <h1 class="logo"><a href="#" data-route="/" style="color: inherit; text-decoration: none;">2 GRAMS GAMES</a></h1>
+          <a href="#" data-route="/" class="logo-link">
+            <img src="/icons/icon-192x192.png" alt="2GG" class="navbar-logo" />
+            <h1 class="logo">2 GRAMS GAMES</h1>
+          </a>
           <div class="nav-links">
             <a href="#" data-route="/" class="nav-link">Accueil</a>
             <a href="#" data-route="/games" class="nav-link">🎮 Jeux</a>
             ${isAuthenticated && user ? `
-              <span class="nav-user">👤 ${user.email}</span>
+              <span class="nav-user">👤 ${user.username || user.email}</span>
               <button class="btn-logout" id="logoutBtn">Déconnexion</button>
             ` : `
               <a href="#" data-route="/login" class="btn-login">Se connecter</a>
