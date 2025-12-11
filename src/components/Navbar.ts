@@ -31,8 +31,21 @@ export class Navbar {
             <a href="#" data-route="/" class="nav-link">Accueil</a>
             <a href="#" data-route="/games" class="nav-link">🎮 Jeux</a>
             ${isAuthenticated && user ? `
-              <span class="nav-user">👤 ${user.username || user.email}</span>
-              <button class="btn-logout" id="logoutBtn">Déconnexion</button>
+              <a href="#" data-route="/leaderboard" class="nav-link">🏆</a>
+              <a href="#" data-route="/friends" class="nav-link">👥</a>
+              <div class="nav-user-menu">
+                <button class="nav-user-btn" id="userMenuBtn">
+                  👤 ${user.username || user.email?.split('@')[0]}
+                </button>
+                <div class="nav-dropdown" id="userDropdown">
+                  <a href="#" data-route="/profile" class="dropdown-item">📊 Mon profil</a>
+                  <a href="#" data-route="/stats" class="dropdown-item">📈 Statistiques</a>
+                  <a href="#" data-route="/playlists" class="dropdown-item">🎵 Playlists</a>
+                  <a href="#" data-route="/settings" class="dropdown-item">⚙️ Paramètres</a>
+                  <hr class="dropdown-divider" />
+                  <button class="dropdown-item logout" id="logoutBtn">🚪 Déconnexion</button>
+                </div>
+              </div>
             ` : `
               <a href="#" data-route="/login" class="btn-login">Se connecter</a>
             `}
@@ -40,6 +53,22 @@ export class Navbar {
         </div>
       </nav>
     `;
+
+    // User menu toggle
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    
+    if (userMenuBtn && userDropdown) {
+      userMenuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userDropdown.classList.toggle('open');
+      });
+      
+      // Close dropdown when clicking outside
+      document.addEventListener('click', () => {
+        userDropdown.classList.remove('open');
+      });
+    }
 
     // Ajouter l'événement de déconnexion
     const logoutBtn = document.getElementById('logoutBtn');
