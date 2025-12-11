@@ -242,12 +242,18 @@ class ProfileService {
   async uploadAvatar(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
     // Récupérer l'userId depuis la session Supabase si pas défini
     let userId = this.userId;
+    console.log('📸 uploadAvatar - userId from service:', userId);
+    
     if (!userId) {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log('📸 uploadAvatar - session:', session);
+      console.log('📸 uploadAvatar - sessionError:', sessionError);
       userId = session?.user?.id || null;
+      console.log('📸 uploadAvatar - userId from session:', userId);
     }
     
     if (!userId) {
+      console.error('📸 uploadAvatar - Pas de userId trouvé!');
       return { success: false, error: 'Non connecté' };
     }
 
