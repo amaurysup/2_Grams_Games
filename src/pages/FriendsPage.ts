@@ -203,6 +203,7 @@ export class FriendsPage {
           <span class="empty-icon">🔍</span>
           <h3>Aucun résultat</h3>
           <p>Aucun utilisateur trouvé pour "${this.searchQuery}"</p>
+          <p class="search-tip">💡 Assure-toi que ton ami s'est inscrit avec un nom d'utilisateur</p>
         </div>
       `;
     }

@@ -282,21 +282,34 @@ class FriendsService {
     if (!query || query.length < 2) return [];
 
     try {
-      const { data } = await supabase
+      // Rechercher dans la table profiles
+      const { data, error } = await supabase
         .from('profiles')
         .select('id, username, avatar_url, level')
         .ilike('username', `%${query}%`)
         .neq('id', this.userId)
         .limit(10);
 
-      return (data || []).map(p => ({
+      if (error) {
+        console.error('Erreur recherche profiles:', error.message);
+        // Si la table profiles n'existe pas ou erreur, retourner un tableau vide
+        return [];
+      }
+
+      if (!data || data.length === 0) {
+        console.log('Aucun utilisateur trouvé pour:', query);
+        return [];
+      }
+
+      return data.map(p => ({
         user_id: p.id,
-        username: p.username,
+        username: p.username || 'Utilisateur',
         avatar_url: p.avatar_url,
         level: p.level || 1,
         status: 'offline' as const,
       }));
-    } catch {
+    } catch (err) {
+      console.error('Erreur recherche utilisateurs:', err);
       return [];
     }
   }

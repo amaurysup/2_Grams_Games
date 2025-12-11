@@ -24,7 +24,8 @@ export class Navbar {
       <nav class="navbar">
         <div class="nav-container">
           <a href="#" data-route="/" class="logo-link">
-            <img src="/icons/icon-192x192.png" alt="2GG" class="navbar-logo" />
+            <img src="/icons/icon-192x192.png" alt="2GG" class="navbar-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+            <span class="navbar-logo-fallback" style="display:none;">🎲</span>
             <h1 class="logo">2 GRAMS GAMES</h1>
           </a>
           <div class="nav-links">

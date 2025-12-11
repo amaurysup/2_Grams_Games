@@ -17,7 +17,8 @@ export class LandingPage {
         <section class="landing-hero-full">
           <div class="landing-hero-full__content">
             <div class="landing-hero-full__logo">
-              <img src="/icons/icon-192x192.png" alt="2 Grams Games" class="landing-logo-img" />
+              <img src="/icons/icon-192x192.png" alt="2 Grams Games" class="landing-logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" />
+              <div class="landing-logo-fallback" style="display:none;">🎲</div>
             </div>
             
             <h1 class="landing-hero-full__title">

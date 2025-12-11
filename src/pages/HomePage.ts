@@ -461,7 +461,7 @@ export class HomePage {
         data-testid="theme-game-card-${game.id}"
         aria-label="${ariaLabel}"
       >
-        ${imageUrl ? `<img src="${imageUrl}" alt="${game.name}" class="theme-game-card__image" />` : ''}
+        ${imageUrl ? `<img src="${imageUrl}" alt="${game.name}" class="theme-game-card__image" onerror="this.style.display='none'" />` : ''}
         <h3 class="theme-game-card__title">${game.name}</h3>
         <div class="theme-game-card__cta">
           <span class="theme-game-card__cta-text">Jouer</span>
