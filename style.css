@@ -2975,6 +2975,306 @@ h1, h2, h3, h4, h5, h6 {
     color: white;
 }
 
+/* Round Info */
+.round-info {
+    text-align: center;
+    padding: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    color: white;
+}
+
+.round-badge {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.players-remaining {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+.alive-count {
+    font-weight: 800;
+    font-size: 1.2rem;
+}
+
+/* Eliminated players */
+.eliminated-title {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    color: #666;
+}
+
+.eliminated-list .player-item {
+    opacity: 0.6;
+    background: #f0f0f0;
+}
+
+.eliminated-list .player-item.eliminated {
+    text-decoration: line-through;
+}
+
+.role-reveal {
+    margin-left: auto;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+}
+
+.role-reveal.spy-role {
+    background: #e74c3c;
+    color: white;
+}
+
+.role-reveal.civil-role {
+    background: #27ae60;
+    color: white;
+}
+
+/* Elimination buttons */
+.btn-eliminate {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+}
+
+.btn-spy-wins {
+    background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%) !important;
+    color: white;
+}
+
+/* Elimination Phase */
+.undercover-elimination, .undercover-result, .undercover-victory {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
+.elimination-content, .result-content, .victory-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.elimination-instruction {
+    text-align: center;
+}
+
+.elimination-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.elimination-instruction h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.elimination-instruction p {
+    color: #666;
+}
+
+.elimination-players {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.btn-eliminate-player {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-eliminate-player:hover {
+    background: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
+    transform: scale(1.05);
+}
+
+.btn-cancel-elimination {
+    margin-top: auto;
+}
+
+/* Elimination Result */
+.eliminated-reveal {
+    padding: 2rem;
+    border-radius: 25px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.eliminated-reveal.spy-eliminated {
+    background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+    color: white;
+}
+
+.eliminated-reveal.civil-eliminated {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+}
+
+.eliminated-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.eliminated-name {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.eliminated-role {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.result-message {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.result-message.good-news {
+    background: #d4edda;
+    color: #155724;
+}
+
+.result-message.bad-news {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.remaining-info {
+    background: #f8f9fa;
+    padding: 1rem 2rem;
+    border-radius: 15px;
+}
+
+.remaining-info p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    color: #444;
+}
+
+.btn-next-round {
+    margin-top: auto;
+    padding: 1rem 3rem;
+    font-size: 1.2rem;
+}
+
+/* Victory Screens */
+.victory-icon {
+    font-size: 5rem;
+    animation: victoryBounce 0.6s ease-out;
+}
+
+@keyframes victoryBounce {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.victory-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.civil-victory .victory-title {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.spy-victory .victory-title {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.victory-subtitle {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.game-stats {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    width: 100%;
+}
+
+.spies-reveal {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 15px;
+    width: 100%;
+}
+
+.spies-reveal h4 {
+    margin-bottom: 1rem;
+    color: #444;
+}
+
+.spy-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.spy-list li {
+    background: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.secret-word-reveal {
+    margin-top: 1rem;
+}
+
+.secret-word-reveal p {
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.word-reveal {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--pink);
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    border: 3px solid var(--pink);
+}
+
 /* Responsive Undercover */
 @media (max-width: 768px) {
     .undercover-header h2 {
