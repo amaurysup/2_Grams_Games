@@ -5,6 +5,12 @@ import { RegisterPage } from './pages/RegisterPage';
 import { GameDetailPage } from './pages/GameDetailPage';
 import { PartyModePage } from './pages/PartyModePage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { LeaderboardPage } from './pages/LeaderboardPage';
+import { PlaylistsPage } from './pages/PlaylistsPage';
+import { FriendsPage } from './pages/FriendsPage';
+import { SettingsPage } from './pages/SettingsPage';
+import { StatsPage } from './pages/StatsPage';
 
 // Parsed hash result interface
 export interface ParsedHash {
@@ -214,6 +220,31 @@ export class Router {
           // No game ID provided, show 404
           new NotFoundPage(this.appContainer);
         }
+        break;
+      
+      case 'profile':
+        const profileId = params.id;
+        new ProfilePage(this.appContainer, profileId);
+        break;
+
+      case 'leaderboard':
+        new LeaderboardPage(container).render();
+        break;
+      
+      case 'playlists':
+        new PlaylistsPage(container).render();
+        break;
+      
+      case 'friends':
+        new FriendsPage(container).render();
+        break;
+      
+      case 'settings':
+        new SettingsPage(container).render();
+        break;
+      
+      case 'stats':
+        new StatsPage(container).render();
         break;
       
       default:
