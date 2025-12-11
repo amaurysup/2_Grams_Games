@@ -205,6 +205,7 @@ export class UndercoverGame {
       const input = this.modal.querySelector(`#player-name-${index}`) as HTMLInputElement;
       if (input && input.value.trim()) {
         player.name = input.value.trim();
+        console.log(`Joueur ${index} nommé: ${player.name}`);
       } else {
         allNamesFilled = false;
       }
@@ -215,6 +216,7 @@ export class UndercoverGame {
       return;
     }
 
+    console.log('Tous les joueurs:', this.gameState.players.map(p => p.name));
     this.gameState.currentPlayerIndex = 0;
     this.renderRevealPhase();
   }
@@ -229,6 +231,9 @@ export class UndercoverGame {
     
     // Vérifier que le joueur a un nom
     const playerName = currentPlayer.name || `Joueur ${this.gameState.currentPlayerIndex + 1}`;
+    
+    console.log('Affichage révélation pour:', playerName, '- Index:', this.gameState.currentPlayerIndex);
+    console.log('Joueur complet:', currentPlayer);
 
     this.modal.innerHTML = `
       <div class="game-modal-content undercover-reveal">
@@ -268,6 +273,8 @@ export class UndercoverGame {
   private revealCard(isLastPlayer: boolean) {
     const currentPlayer = this.gameState.players[this.gameState.currentPlayerIndex];
     currentPlayer.hasRevealed = true;
+    
+    console.log('Révélation pour:', currentPlayer.name, 'Role:', currentPlayer.role);
 
     const cardContainer = this.modal.querySelector('#card-container');
 
@@ -298,15 +305,24 @@ export class UndercoverGame {
       }
       
       cardHTML += `
-        <button class="btn-secondary btn-next-player" id="btn-next-player">
-          ${isLastPlayer ? 'Commencer la partie 🎮' : 'Joueur suivant →'}
+        <button class="btn-next-player" id="btn-next-player">
+          ${isLastPlayer ? '🎮 Commencer la partie' : '➡️ Joueur suivant'}
         </button>
       `;
       
       cardContainer.innerHTML = cardHTML;
+      console.log('Carte révélée, bouton ajouté');
       
-      const nextBtn = cardContainer.querySelector('#btn-next-player');
-      nextBtn?.addEventListener('click', () => this.handleNextPlayer());
+      const nextBtn = cardContainer.querySelector('#btn-next-player') as HTMLButtonElement;
+      if (nextBtn) {
+        console.log('Bouton trouvé, ajout du listener');
+        nextBtn.addEventListener('click', () => {
+          console.log('Bouton cliqué !');
+          this.handleNextPlayer();
+        });
+      } else {
+        console.error('Bouton #btn-next-player non trouvé !');
+      }
     }
   }
 

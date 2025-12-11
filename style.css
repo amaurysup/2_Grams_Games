@@ -1593,6 +1593,45 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 12px 32px rgba(255, 20, 147, 0.7);
 }
 
+/* Bouton flottant Mode Tinder */
+.tinder-fab {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    height: 55px;
+    padding: 0 1.2rem;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(118, 75, 162, 0.5);
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    color: white;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.tinder-fab:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 32px rgba(118, 75, 162, 0.7);
+}
+
+.tinder-fab .fab-icon {
+    font-size: 1.5rem;
+    animation: none;
+}
+
+.tinder-fab .fab-label {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .fab-icon {
     font-size: 2rem;
     animation: fabBounce 1s ease-in-out infinite;
@@ -2248,6 +2287,8 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1rem;
     font-family: 'Poppins', sans-serif;
     transition: all 0.2s;
+    background: white;
+    color: #1a1a1a;
 }
 
 .player-name-input:focus {
@@ -2294,8 +2335,10 @@ h1, h2, h3, h4, h5, h6 {
 .card-reveal-container {
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 2rem;
     min-height: 250px;
 }
 
@@ -2427,6 +2470,18 @@ h1, h2, h3, h4, h5, h6 {
     padding: 1rem 2.5rem;
     font-size: 1.2rem;
     border-radius: 25px;
+    background: var(--pink) !important;
+    color: white !important;
+    border: none !important;
+    cursor: pointer !important;
+    display: block !important;
+    margin: 0 auto !important;
+    font-weight: 600;
+}
+
+.btn-next-player:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 20, 147, 0.4);
 }
 
 /* Phase Playing */
@@ -2715,8 +2770,8 @@ h1, h2, h3, h4, h5, h6 {
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
     font-size: 1rem;
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
+    background: white;
+    color: #1a1a1a;
     font-family: 'Poppins', sans-serif;
     transition: all 0.3s;
 }
@@ -2724,12 +2779,12 @@ h1, h2, h3, h4, h5, h6 {
 .player-name-input:focus {
     outline: none;
     border-color: var(--yellow);
-    background: rgba(255, 255, 255, 0.25);
+    background: white;
     transform: scale(1.02);
 }
 
 .player-name-input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(26, 26, 26, 0.5);
 }
 
 /* Game Screen */
@@ -3471,3 +3526,391 @@ h1, h2, h3, h4, h5, h6 {
         font-size: 2rem;
     }
 }
+
+/* ========================================
+   TINDER MODE
+   ======================================== */
+
+.tinder-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.tinder-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    color: white;
+}
+
+.tinder-header h1 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.tinder-header .back-btn {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2rem;
+    transition: background 0.3s;
+}
+
+.tinder-header .back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.game-counter {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: 600;
+}
+
+/* Setup Phase */
+.tinder-setup {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    text-align: center;
+    color: white;
+}
+
+.setup-icon {
+    font-size: 5rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.tinder-setup h2 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.player-count-selector {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.count-btn {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    color: #764ba2;
+    font-size: 2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.count-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.count-btn:active {
+    transform: scale(0.95);
+}
+
+.player-count-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1.5rem 2.5rem;
+    border-radius: 1rem;
+}
+
+.player-count-display #player-count {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.player-label {
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.btn-start-tinder {
+    padding: 1.2rem 3rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 3rem;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 5px 20px rgba(238, 90, 36, 0.4);
+    margin-top: 1rem;
+}
+
+.btn-start-tinder:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(238, 90, 36, 0.5);
+}
+
+/* Swipe Phase */
+.tinder-instructions {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2rem;
+    margin-bottom: 1rem;
+}
+
+.swipe-hint {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.swipe-hint.swipe-left {
+    color: #ff6b6b;
+}
+
+.swipe-hint.swipe-right {
+    color: #51cf66;
+}
+
+.tinder-card-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    perspective: 1000px;
+    padding: 0 1rem;
+}
+
+.tinder-card {
+    width: 100%;
+    max-width: 380px;
+    height: 500px;
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    position: relative;
+    cursor: grab;
+    user-select: none;
+    transition: transform 0.3s ease;
+}
+
+.tinder-card:active {
+    cursor: grabbing;
+}
+
+.card-image {
+    height: 55%;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.card-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+}
+
+.card-content {
+    padding: 1.5rem;
+    height: 45%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.card-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--dark);
+}
+
+.card-description {
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.4;
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.game-tag {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 0.3rem 0.7rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.card-players {
+    font-weight: 600;
+    color: #764ba2;
+    font-size: 0.9rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #eee;
+}
+
+/* Swipe Indicators */
+.swipe-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 5rem;
+    font-weight: 900;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 10;
+}
+
+.swipe-left-indicator {
+    left: 2rem;
+    color: #ff6b6b;
+}
+
+.swipe-right-indicator {
+    right: 2rem;
+    color: #51cf66;
+}
+
+/* Action Buttons */
+.tinder-actions {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    padding: 2rem;
+}
+
+.action-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+}
+
+.action-btn:active {
+    transform: scale(0.95);
+}
+
+.action-pass {
+    background: white;
+    color: #ff6b6b;
+}
+
+.action-play {
+    background: linear-gradient(135deg, #51cf66, #40c057);
+    color: white;
+}
+
+.action-icon {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.action-btn span:last-child {
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 0.2rem;
+}
+
+/* Empty State */
+.tinder-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    color: white;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 5rem;
+}
+
+.tinder-empty h2 {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+}
+
+.tinder-empty p {
+    opacity: 0.8;
+}
+
+.btn-restart {
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 2rem;
+    background: white;
+    color: #764ba2;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-restart:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .tinder-card {
+        height: 450px;
+    }
+    
+    .card-image {
+        height: 50%;
+    }
+    
+    .action-btn {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .action-icon {
+        font-size: 1.5rem;
+    }
+}
+

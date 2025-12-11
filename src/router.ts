@@ -3,6 +3,7 @@ import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { GameDetailPage } from './pages/GameDetailPage';
+import { TinderModePage } from './pages/TinderModePage';
 
 export class Router {
   private appContainer: string;
@@ -75,6 +76,11 @@ export class Router {
       case 'games':
         console.log('✅ Router - Chargement de HomePage (jeux)');
         new HomePage(this.appContainer);
+        break;
+      
+      case 'tinder':
+        console.log('✅ Router - Chargement de TinderModePage');
+        new TinderModePage(this.appContainer);
         break;
       
       case 'login':

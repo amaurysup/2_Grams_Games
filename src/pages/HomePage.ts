@@ -110,6 +110,9 @@ export class HomePage {
     
     // Ajouter le bouton flottant
     this.addChatbotButton();
+    
+    // Ajouter le bouton mode Tinder
+    this.addTinderButton();
   }
 
   private addChatbotButton(): void {
@@ -127,6 +130,26 @@ export class HomePage {
     
     fab.addEventListener('click', () => {
       this.chatbot?.toggle();
+    });
+    
+    document.body.appendChild(fab);
+  }
+
+  private addTinderButton(): void {
+    // Vérifier si le bouton existe déjà
+    if (document.getElementById('tinder-fab')) return;
+    
+    const fab = document.createElement('button');
+    fab.id = 'tinder-fab';
+    fab.className = 'tinder-fab';
+    fab.setAttribute('aria-label', 'Mode Tinder - Trouver un jeu');
+    fab.innerHTML = `
+      <span class="fab-icon">🔥</span>
+      <span class="fab-label">Tinder</span>
+    `;
+    
+    fab.addEventListener('click', () => {
+      window.location.hash = '/tinder';
     });
     
     document.body.appendChild(fab);
