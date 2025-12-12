@@ -1,4 +1,7 @@
 import { getPartyData } from '../pages/PartyModePage';
+import { statsService } from '../services/StatsService';
+import { achievementsService } from '../services/AchievementsService';
+import { QuitGameButton } from '../components/QuitGameButton';
 
 interface Player {
   name: string;
@@ -197,7 +200,7 @@ export class DiceGame {
       <div class="game-controls" id="gameControls">
         <button class="btn-roll-dice" id="btnRollDice">🎲 Lancer le dé</button>
         <button class="btn-reset-game" id="btnResetGame">🔄 Nouvelle partie</button>
-        <button class="btn-end-game">💾 Sauvegarder et quitter</button>
+        ${QuitGameButton.render()}
       </div>
     `;
   }
@@ -248,7 +251,7 @@ export class DiceGame {
       } else if (target.id === 'btnResetGame') {
         const confirm = window.confirm('Voulez-vous vraiment recommencer une nouvelle partie ? La progression actuelle sera perdue.');
         if (confirm) this.resetGame();
-      } else if (target.classList.contains('btn-end-game')) {
+      } else if (target.id === 'btn-quit-game') {
         this.close();
       }
     });
@@ -290,6 +293,9 @@ export class DiceGame {
 
     this.gameStarted = true;
     this.saveGameState();
+    
+    // Démarrer le tracking de la session
+    statsService.startGameSession(this.gameName, this.gameName, this.players.length);
     
     const content = document.getElementById('modalContent');
     if (content) {
@@ -396,6 +402,12 @@ export class DiceGame {
       );
       
       if (!confirm) return;
+      
+      // Terminer la session et mettre à jour les stats
+      const session = statsService.endGameSession(true);
+      if (session) {
+        achievementsService.checkAchievements();
+      }
     }
 
     if (this.modal) {

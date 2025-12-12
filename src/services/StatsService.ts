@@ -8,6 +8,23 @@ class StatsService {
   private userId: string | null = null;
   private stats: UserStats | null = null;
   private currentSession: GameSession | null = null;
+  private beforeUnloadHandler: ((e: BeforeUnloadEvent) => void) | null = null;
+
+  constructor() {
+    // Terminer automatiquement les sessions en cours si la page se ferme
+    this.setupAutoEndSession();
+  }
+
+  private setupAutoEndSession(): void {
+    this.beforeUnloadHandler = () => {
+      if (this.currentSession) {
+        // Terminer la session de manière synchrone avant que la page ne se ferme
+        this.endGameSession(false);
+      }
+    };
+
+    window.addEventListener('beforeunload', this.beforeUnloadHandler);
+  }
 
   setUser(userId: string | null): void {
     this.userId = userId;
@@ -280,6 +297,16 @@ class StatsService {
     this.stats.monthly_activity.shift();
     this.stats.monthly_activity.push(0);
     this.saveToLocal();
+  }
+
+  // Vérifier si une session est en cours
+  hasActiveSession(): boolean {
+    return this.currentSession !== null;
+  }
+
+  // Obtenir la session en cours
+  getCurrentSession(): GameSession | null {
+    return this.currentSession;
   }
 }
 

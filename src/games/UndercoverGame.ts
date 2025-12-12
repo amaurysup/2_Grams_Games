@@ -1,5 +1,8 @@
 import { getRandomWord } from '../data/undercoverWords';
 import { getPartyData } from '../pages/PartyModePage';
+import { statsService } from '../services/StatsService';
+import { achievementsService } from '../services/AchievementsService';
+import { QuitGameButton } from '../components/QuitGameButton';
 
 interface Player {
   name: string;
@@ -53,6 +56,14 @@ export class UndercoverGame {
   }
 
   close() {
+    // Terminer la session si le jeu est en cours
+    if (this.gameState.phase === 'playing' || this.gameState.phase === 'reveal' || this.gameState.phase === 'elimination') {
+      const session = statsService.endGameSession(false); // Partie non complétée
+      if (session) {
+        achievementsService.checkAchievements();
+      }
+    }
+    
     this.saveGameState();
     this.overlay.remove();
   }
@@ -240,6 +251,10 @@ export class UndercoverGame {
 
     console.log('Tous les joueurs:', this.gameState.players.map(p => p.name));
     this.gameState.currentPlayerIndex = 0;
+    
+    // Démarrer le tracking de la session
+    statsService.startGameSession(this.gameName, this.gameName, this.gameState.players.length);
+    
     this.renderRevealPhase();
   }
 
@@ -580,6 +595,12 @@ export class UndercoverGame {
   private renderCivilVictory() {
     this.gameState.phase = 'finished';
     
+    // Terminer la session et mettre à jour les stats
+    const session = statsService.endGameSession(true);
+    if (session) {
+      achievementsService.checkAchievements();
+    }
+    
     const spies = this.gameState.players.filter(p => p.role === 'spy');
 
     this.modal.innerHTML = `
@@ -620,9 +641,7 @@ export class UndercoverGame {
             <button class="btn-primary btn-new-game" id="btn-new-game">
               🔄 Nouvelle partie
             </button>
-            <button class="btn-secondary btn-quit" id="btn-quit">
-              🚪 Quitter
-            </button>
+            ${QuitGameButton.render()}
           </div>
         </div>
       </div>
@@ -636,6 +655,12 @@ export class UndercoverGame {
    */
   private renderSpyVictory() {
     this.gameState.phase = 'finished';
+    
+    // Terminer la session et mettre à jour les stats
+    const session = statsService.endGameSession(true);
+    if (session) {
+      achievementsService.checkAchievements();
+    }
     
     const spies = this.gameState.players.filter(p => p.role === 'spy');
     const aliveSpies = spies.filter(p => !p.isEliminated);
@@ -678,9 +703,7 @@ export class UndercoverGame {
             <button class="btn-primary btn-new-game" id="btn-new-game">
               🔄 Nouvelle partie
             </button>
-            <button class="btn-secondary btn-quit" id="btn-quit">
-              🚪 Quitter
-            </button>
+            ${QuitGameButton.render()}
           </div>
         </div>
       </div>
@@ -699,8 +722,7 @@ export class UndercoverGame {
     const newGameBtn = this.modal.querySelector('#btn-new-game');
     newGameBtn?.addEventListener('click', () => this.renderPlayerSetup());
 
-    const quitBtn = this.modal.querySelector('#btn-quit');
-    quitBtn?.addEventListener('click', () => this.close());
+    QuitGameButton.attach(() => this.close());
   }
 
   /**

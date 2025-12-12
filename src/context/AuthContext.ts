@@ -1,6 +1,8 @@
 import { supabase } from '../lib/supabase';
 import type { User, AuthState, AuthContextType, Profile } from '../types';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import { statsService } from '../services/StatsService';
+import { achievementsService } from '../services/AchievementsService';
 
 class AuthContext {
   private authState: AuthState = {
@@ -85,6 +87,10 @@ class AuthContext {
       user: user,
       loading: false
     };
+    
+    // Initialiser les services avec l'userId
+    statsService.setUser(supabaseUser.id);
+    achievementsService.setUser(supabaseUser.id);
     
     this.notify();
   }
@@ -199,6 +205,10 @@ class AuthContext {
   }
 
   async signOut(): Promise<void> {
+    // Réinitialiser les services
+    statsService.setUser(null);
+    achievementsService.setUser(null);
+    
     await supabase.auth.signOut();
   }
 

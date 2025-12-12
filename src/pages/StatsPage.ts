@@ -143,10 +143,19 @@ export class StatsPage {
       return '<p class="no-data">Joue à des jeux pour voir tes favoris !</p>';
     }
 
+    // Mapping des IDs de jeux vers leurs noms affichés
+    const gameNames: Record<string, string> = {
+      'never-have-i-ever': 'Je n\'ai jamais',
+      'Jeu des transports': 'Jeu des transports',
+      'Undercover': 'Undercover',
+      'roulette': 'Roulette',
+      'piccola': 'Piccola'
+    };
+
     return gamesByCount.map(([gameId, count], index) => `
       <div class="most-played-item" data-game-id="${gameId}">
         <span class="rank">#${index + 1}</span>
-        <span class="game-name">${gameId}</span>
+        <span class="game-name">${gameNames[gameId] || gameId}</span>
         <span class="play-count">${count} partie${count > 1 ? 's' : ''}</span>
       </div>
     `).join('');

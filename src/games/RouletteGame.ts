@@ -4,6 +4,9 @@
  */
 
 import { getPartyData } from '../pages/PartyModePage';
+import { statsService } from '../services/StatsService';
+import { achievementsService } from '../services/AchievementsService';
+import { QuitGameButton } from '../components/QuitGameButton';
 
 interface PlayerStats {
   name: string;
@@ -102,9 +105,10 @@ export class RouletteGame {
             <button id="start-game-btn" class="btn-primary">
               🎲 Commencer la partie
             </button>
+            <div style="margin-top: 1rem;">
+              ${QuitGameButton.render()}
+            </div>
           </div>
-
-          <button id="close-roulette-btn" class="btn-close">✕</button>
         </div>
       </div>
     `;
@@ -118,7 +122,6 @@ export class RouletteGame {
   private attachSetupListeners(): void {
     const playerCountInput = document.getElementById('player-count') as HTMLInputElement;
     const startGameBtn = document.getElementById('start-game-btn');
-    const closeBtn = document.getElementById('close-roulette-btn');
 
     playerCountInput?.addEventListener('input', () => {
       const count = parseInt(playerCountInput.value) || 3;
@@ -134,7 +137,14 @@ export class RouletteGame {
       }
     });
 
-    closeBtn?.addEventListener('click', () => {
+    QuitGameButton.attach(() => {
+      // Terminer la session si une partie est en cours
+      if (this.gameState) {
+        const session = statsService.endGameSession(false);
+        if (session) {
+          achievementsService.checkAchievements();
+        }
+      }
       this.container.innerHTML = '';
     });
   }
@@ -192,6 +202,9 @@ export class RouletteGame {
       history: [],
       bettingPhase: true
     };
+
+    // Démarrer le tracking de la session
+    statsService.startGameSession('roulette', 'Jeu de la Roulette', playerNames.length);
 
     this.saveGameState();
     this.renderBettingScreen();

@@ -5,6 +5,9 @@
 
 import { PiccolaCard, getShuffledDeck, getCardWithRandomPlayers } from '../data/piccolaCards';
 import { getPartyData } from '../pages/PartyModePage';
+import { statsService } from '../services/StatsService';
+import { achievementsService } from '../services/AchievementsService';
+import { QuitGameButton } from '../components/QuitGameButton';
 
 interface GameState {
   players: string[];
@@ -86,9 +89,10 @@ export class PiccolaGame {
             <button id="start-game-btn" class="btn-primary">
               🎮 Commencer la partie
             </button>
+            <div style="margin-top: 1rem;">
+              ${QuitGameButton.render()}
+            </div>
           </div>
-
-          <button id="close-piccola-btn" class="btn-close">✕</button>
         </div>
       </div>
     `;
@@ -102,7 +106,6 @@ export class PiccolaGame {
   private attachSetupListeners(): void {
     const playerCountInput = document.getElementById('player-count') as HTMLInputElement;
     const startGameBtn = document.getElementById('start-game-btn');
-    const closeBtn = document.getElementById('close-piccola-btn');
 
     // Mise à jour du nombre de champs de noms
     playerCountInput?.addEventListener('input', () => {
@@ -120,8 +123,8 @@ export class PiccolaGame {
       }
     });
 
-    // Fermer le jeu
-    closeBtn?.addEventListener('click', () => {
+    // Bouton Quitter
+    QuitGameButton.attach(() => {
       this.container.innerHTML = '';
     });
   }
@@ -179,6 +182,9 @@ export class PiccolaGame {
       currentCardIndex: 0,
       cardsPlayed: 0
     };
+
+    // Démarrer le tracking de la session
+    statsService.startGameSession('piccola', 'Jeu Piccola', players.length);
 
     this.saveGameState();
     this.renderGameScreen();
@@ -305,6 +311,12 @@ export class PiccolaGame {
    */
   private renderGameOver(): void {
     if (!this.gameState) return;
+
+    // Terminer la session et mettre à jour les stats
+    const session = statsService.endGameSession(true);
+    if (session) {
+      achievementsService.checkAchievements();
+    }
 
     this.container.innerHTML = `
       <div class="piccola-modal-overlay">

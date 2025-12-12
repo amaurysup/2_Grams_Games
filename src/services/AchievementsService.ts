@@ -409,6 +409,36 @@ class AchievementsService {
       this.checkAndUnlock('early_bird', 1);
     }
   }
+
+  // Vérifier tous les achievements basés sur les stats actuelles
+  checkAchievements(): void {
+    if (!this.userId) return;
+
+    // Importer statsService localement pour éviter les dépendances circulaires
+    const statsService = require('./StatsService').statsService;
+    const stats = statsService.getStats();
+    if (!stats) return;
+
+    // Vérifications basées sur le temps
+    this.checkTimeBasedAchievements();
+
+    // Achievements basés sur les parties jouées
+    this.checkAndUnlock('first_game', stats.total_games_played);
+    this.checkAndUnlock('games_10', stats.total_games_played);
+    this.checkAndUnlock('games_50', stats.total_games_played);
+    this.checkAndUnlock('games_100', stats.total_games_played);
+    this.checkAndUnlock('games_500', stats.total_games_played);
+
+    // Achievements basés sur le temps de jeu
+    this.checkAndUnlock('time_1h', stats.total_time_played);
+    this.checkAndUnlock('time_10h', stats.total_time_played);
+    this.checkAndUnlock('time_50h', stats.total_time_played);
+
+    // Achievements basés sur les streaks
+    this.checkAndUnlock('streak_3', stats.current_streak);
+    this.checkAndUnlock('streak_7', stats.current_streak);
+    this.checkAndUnlock('streak_30', stats.current_streak);
+  }
 }
 
 export const achievementsService = new AchievementsService();

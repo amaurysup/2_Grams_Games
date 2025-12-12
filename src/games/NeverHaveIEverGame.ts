@@ -6,6 +6,9 @@
 import { Card } from '../components/Card';
 import { NEVER_HAVE_I_EVER_QUESTIONS, NeverHaveIEverQuestion } from '../data/neverHaveIEverQuestions';
 import { getPartyData } from '../pages/PartyModePage';
+import { statsService } from '../services/StatsService';
+import { achievementsService } from '../services/AchievementsService';
+import { QuitGameButton } from '../components/QuitGameButton';
 
 // Storage key for Party Mode players
 const PARTY_PLAYERS_KEY = 'current_party_players';
@@ -655,6 +658,9 @@ export class NeverHaveIEverGame {
       questions: [...NEVER_HAVE_I_EVER_QUESTIONS]
     };
 
+    // Démarrer le tracking de la session
+    statsService.startGameSession('never-have-i-ever', 'Je n\'ai jamais', playerNames.length);
+
     this.saveGameState();
     this.renderGameScreen();
   }
@@ -802,9 +808,7 @@ export class NeverHaveIEverGame {
               <button class="nhie-btn nhie-btn-primary" id="btnPlayAgain">
                 🔄 Rejouer
               </button>
-              <button class="nhie-btn nhie-btn-secondary" id="btnClose">
-                ✕ Fermer
-              </button>
+              ${QuitGameButton.render()}
             </div>
           </div>
         </div>
@@ -1023,6 +1027,14 @@ export class NeverHaveIEverGame {
    * Close the game
    */
   private close(): void {
+    // Terminer la session si une partie est en cours
+    if (this.gameState) {
+      const session = statsService.endGameSession(false);
+      if (session) {
+        achievementsService.checkAchievements();
+      }
+    }
+    
     this.container.innerHTML = '';
     this.container.remove();
   }
