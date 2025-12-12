@@ -19,8 +19,6 @@ interface GameState {
   players: Player[];
   currentQuestionIndex: number;
   questions: NeverHaveIEverQuestion[];
-  currentPlayerIndex: number;
-  totalRounds: number;
 }
 
 export class NeverHaveIEverGame {
@@ -397,6 +395,67 @@ export class NeverHaveIEverGame {
         box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4);
       }
 
+      /* Player actions section */
+      .nhie-players-actions {
+        width: 100%;
+        text-align: center;
+        margin: 1rem 0;
+      }
+
+      .nhie-instruction {
+        color: #aaa;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+      }
+
+      .nhie-player-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        justify-content: center;
+      }
+
+      .nhie-player-drink-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.8rem 1.2rem;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 15px;
+        color: #fff;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 100px;
+      }
+
+      .nhie-player-drink-btn:hover:not(.clicked):not([disabled]) {
+        background: linear-gradient(135deg, var(--pink, #ff6b9d), #ff8fab);
+        border-color: var(--pink, #ff6b9d);
+        transform: scale(1.05);
+      }
+
+      .nhie-player-drink-btn.clicked {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+        border-color: #27ae60;
+        cursor: default;
+      }
+
+      .nhie-player-drink-btn[disabled] {
+        opacity: 0.8;
+      }
+
+      .nhie-player-drink-name {
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .nhie-player-drink-label {
+        font-size: 0.75rem;
+        opacity: 0.8;
+      }
+
       /* Scoreboard */
       .nhie-scoreboard {
         width: 100%;
@@ -593,9 +652,7 @@ export class NeverHaveIEverGame {
     this.gameState = {
       players,
       currentQuestionIndex: 0,
-      questions: [...NEVER_HAVE_I_EVER_QUESTIONS],
-      currentPlayerIndex: 0,
-      totalRounds: 0
+      questions: [...NEVER_HAVE_I_EVER_QUESTIONS]
     };
 
     this.saveGameState();
@@ -608,7 +665,7 @@ export class NeverHaveIEverGame {
   private renderGameScreen(): void {
     if (!this.gameState) return;
 
-    const { players, currentQuestionIndex, questions, currentPlayerIndex } = this.gameState;
+    const { players, currentQuestionIndex, questions } = this.gameState;
 
     // Check if game is over
     if (currentQuestionIndex >= questions.length) {
@@ -617,7 +674,6 @@ export class NeverHaveIEverGame {
     }
 
     const currentQuestion = questions[currentQuestionIndex];
-    const currentPlayer = players[currentPlayerIndex];
     const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
 
     // Create the card
@@ -628,9 +684,17 @@ export class NeverHaveIEverGame {
       color: this.getCardColor(currentQuestion.category)
     });
 
+    // Players drink buttons - each player can click to say "I did it"
+    const playerButtonsHtml = players.map((p, i) => `
+      <button class="nhie-player-drink-btn" data-player-index="${i}">
+        <span class="nhie-player-drink-name">${p.name}</span>
+        <span class="nhie-player-drink-label">Je l'ai fait ! 🍺</span>
+      </button>
+    `).join('');
+
     // Players scoreboard
-    const playersHtml = players.map((p, i) => `
-      <div class="nhie-player-badge ${i === currentPlayerIndex ? 'active' : ''}">
+    const playersHtml = players.map((p) => `
+      <div class="nhie-player-badge">
         ${p.name}
         <span class="nhie-drink-count">🍺 ${p.drinkCount}</span>
       </div>
@@ -647,7 +711,7 @@ export class NeverHaveIEverGame {
 
           <div class="nhie-game">
             <div class="nhie-turn-indicator">
-              Tour de <strong>${currentPlayer.name}</strong>
+              Tour <strong>${currentQuestionIndex + 1}</strong>
             </div>
 
             <div class="nhie-deck-container">
@@ -669,13 +733,14 @@ export class NeverHaveIEverGame {
               </div>
             </div>
 
-            <div class="nhie-controls">
-              <div class="nhie-action-btns">
-                <button class="nhie-btn-drink" id="btnDrink">
-                  🍺 Je l'ai fait ! (Boire)
-                </button>
+            <div class="nhie-players-actions">
+              <p class="nhie-instruction">Qui l'a déjà fait ? Cliquez sur votre nom !</p>
+              <div class="nhie-player-buttons">
+                ${playerButtonsHtml}
               </div>
-              
+            </div>
+
+            <div class="nhie-controls">
               <button class="nhie-btn-next" id="btnNextCard">
                 Carte suivante →
               </button>
@@ -795,20 +860,30 @@ export class NeverHaveIEverGame {
    */
   private attachGameListeners(): void {
     const closeBtn = document.getElementById('closeNhie');
-    const drinkBtn = document.getElementById('btnDrink');
     const nextBtn = document.getElementById('btnNextCard');
+    const playerButtons = this.container.querySelectorAll('.nhie-player-drink-btn');
 
     closeBtn?.addEventListener('click', () => this.close());
 
-    drinkBtn?.addEventListener('click', () => {
-      if (!this.gameState) return;
-      
-      // Current player drinks
-      this.gameState.players[this.gameState.currentPlayerIndex].drinkCount++;
-      this.saveGameState();
-      
-      // Update UI
-      this.renderGameScreen();
+    // Each player can click their button to add a drink
+    playerButtons.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        if (!this.gameState) return;
+        
+        const target = e.currentTarget as HTMLElement;
+        const playerIndex = parseInt(target.dataset.playerIndex || '0');
+        
+        // Add drink to this player
+        this.gameState.players[playerIndex].drinkCount++;
+        this.saveGameState();
+        
+        // Visual feedback - mark button as clicked
+        target.classList.add('clicked');
+        target.setAttribute('disabled', 'true');
+        
+        // Update scoreboard only (not full re-render to keep button states)
+        this.updateScoreboard();
+      });
     });
 
     nextBtn?.addEventListener('click', () => {
@@ -837,6 +912,25 @@ export class NeverHaveIEverGame {
   }
 
   /**
+   * Update scoreboard without full re-render
+   */
+  private updateScoreboard(): void {
+    if (!this.gameState) return;
+    
+    const scoreboardList = this.container.querySelector('.nhie-players-list');
+    if (!scoreboardList) return;
+    
+    const playersHtml = this.gameState.players.map((p) => `
+      <div class="nhie-player-badge">
+        ${p.name}
+        <span class="nhie-drink-count">🍺 ${p.drinkCount}</span>
+      </div>
+    `).join('');
+    
+    scoreboardList.innerHTML = playersHtml;
+  }
+
+  /**
    * Move to next card
    */
   private nextCard(): void {
@@ -855,18 +949,12 @@ export class NeverHaveIEverGame {
         // Move to next question
         this.gameState.currentQuestionIndex++;
         
-        // Move to next player
-        this.gameState.currentPlayerIndex = 
-          (this.gameState.currentPlayerIndex + 1) % this.gameState.players.length;
-        
         this.saveGameState();
         this.renderGameScreen();
       }, 400);
     } else {
       // No animation, just proceed
       this.gameState.currentQuestionIndex++;
-      this.gameState.currentPlayerIndex = 
-        (this.gameState.currentPlayerIndex + 1) % this.gameState.players.length;
       
       this.saveGameState();
       this.renderGameScreen();
