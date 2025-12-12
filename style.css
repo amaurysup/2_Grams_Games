@@ -1757,10 +1757,15 @@ h1, h2, h3, h4, h5, h6 {
     /* Responsive général pour mobile */
     body {
         font-size: 14px;
+        padding-top: 0;
     }
 
     .navbar {
-        padding: 1rem 0;
+        padding: 0.75rem 0;
+        position: relative;
+        top: auto;
+        left: auto;
+        right: auto;
     }
 
     .logo {
