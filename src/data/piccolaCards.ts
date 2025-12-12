@@ -722,16 +722,10 @@ export function shuffleCards(cards: PiccolaCard[]): PiccolaCard[] {
 
 /**
  * Fonction pour obtenir un deck mélangé complet
- * Les cartes DÉMO apparaissent en premier (dans l'ordre),
- * puis les autres cartes sont mélangées aléatoirement
+ * Toutes les cartes (DÉMO + classiques) sont mélangées aléatoirement
  */
 export function getShuffledDeck(): PiccolaCard[] {
-  // Cartes démo en premier (dans l'ordre)
-  const demoCards = [...DEMO_CARDS];
-  
-  // Cartes classiques mélangées ensuite
-  const shuffledRegularCards = shuffleCards(PICCOLA_CARDS);
-  
-  // Retourner démo + mélangées
-  return [...demoCards, ...shuffledRegularCards];
+  // Combiner toutes les cartes et mélanger
+  const allCards = [...DEMO_CARDS, ...PICCOLA_CARDS];
+  return shuffleCards(allCards);
 }
